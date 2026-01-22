@@ -1,0 +1,172 @@
+---
+title: 'Conditional Requirements'
+description: 'When specialized schemas and fields are required'
+icon: 'code-branch'
+---
+
+## Overview
+
+Many fields and entire schemas are only required under certain conditions. This page documents when conditional data elements become mandatory.
+
+## Conditional Schemas
+
+### When to Submit Each Schema
+
+| Schema | Condition | Required? |
+|--------|-----------|-----------|
+| CLIENT (CLI) | Always | **Required** |
+| ADMISSION (ADM) | Always for new treatment episode | **Required** |
+| DISCHARGE (DIS) | When treatment episode ends | **Required** |
+| DIAGNOSIS (DXA) | At admission | **Required** |
+| DIAGNOSIS (DXD) | At discharge | **Required** |
+| SUBSTANCE USE (SIA) | At admission | **Required** for SUD treatment |
+| SUBSTANCE USE (SID) | At discharge | **Required** for SUD treatment |
+| ACT | Enrolled in ACT program | Conditional |
+| ASCENT (ASA/ASQ/ASD) | Youth residential treatment | Conditional |
+| SC BABY (BAB) | Special Connections + birth | Conditional |
+| SC PREGNANCY RISK (PRS) | Special Connections program | Conditional |
+
+## ACT Schema Conditions
+
+<Note>
+Submit ACT records monthly for all clients enrolled in Assertive Community Treatment programs.
+</Note>
+
+| Condition | Requirement |
+|-----------|-------------|
+| `SERVICE_IDENTIFIER` = `060` (ACT) | ACT schema required |
+| Each calendar month during enrollment | One ACT record per month |
+| Client discharged from ACT | Final ACT record for last month |
+
+## ASCENT Schema Conditions
+
+| Condition | Requirement |
+|-----------|-------------|
+| `SERVICE_IDENTIFIER` in (`070`, `071`) | ASCENT admission (ASA) required |
+| Every 90 days during enrollment | Quarterly assessment (ASQ) required |
+| Youth discharged from program | ASCENT discharge (ASD) required |
+
+## Special Connections Schema Conditions
+
+| Condition | Requirement |
+|-----------|-------------|
+| Client enrolled in Special Connections | SC PREGNANCY RISK (PRS) required |
+| Pregnant at any point during enrollment | PRS assessments throughout |
+| Client gives birth during enrollment | SC BABY (BAB) required per baby |
+| Multiple birth (twins, etc.) | One BAB record per baby |
+
+## Conditional Field Requirements
+
+### CLIENT Schema
+
+| Condition | Required Fields |
+|-----------|-----------------|
+| `CHILD_WELFARE_INVOLVEMENT` = `1` | `TRAILS_IDENTIFIER` |
+| `MEDICAID_ELIGIBLE` = `1` | `MEDICAID_ID` |
+| Any address field provided | `CITY`, `STATE`, `ZIP_CODE` |
+
+### ADMISSION Schema
+
+| Condition | Required Fields |
+|-----------|-----------------|
+| `PRIOR_TREATMENT` = `1` | `PRIOR_EPISODE_DATE` |
+| `LEGAL_STATUS` in (`02`, `03`, `04`, `06`, `07`, `10`) | `COURT_CASE_NUMBER` |
+| `HAS_DEPENDENTS` = `1` | `NUM_DEPENDENTS` |
+| Client is female, age 12-55 | `PREGNANT` |
+| `CRIMINAL_JUSTICE_REFERRAL` = `1` | `LEGAL_STATUS` should reflect CJ involvement |
+
+### DISCHARGE Schema
+
+| Condition | Required Fields |
+|-----------|-----------------|
+| `DISCHARGE_REASON` = `04` (Transfer) | `TRANSFER_FACILITY` |
+| `DISCHARGE_REASON` = `05` (Incarcerated) | `INCARCERATION_FACILITY` |
+| `DISCHARGE_REASON` = `06` (Death) | `DEATH_DATE` |
+| `FOLLOWUP_PLANNED` = `1` | `FOLLOWUP_DATE` recommended |
+
+### DIAGNOSIS Schema
+
+| Condition | Required Fields |
+|-----------|-----------------|
+| `RECORD_TYPE` = `DXA` | `PROVISIONAL` |
+| `RECORD_TYPE` = `DXD` | `DIAGNOSIS_DATE` |
+| Any diagnoses submitted | One must have `PRIMARY_DIAGNOSIS` = `1` |
+
+### SUBSTANCE USE Schema
+
+| Condition | Required Fields |
+|-----------|-----------------|
+| `RECORD_TYPE` = `SIA` | `DAYS_USED_30` |
+| `RECORD_TYPE` = `SID` | `DAYS_ABSTINENT_30` |
+| `IV_DRUG_USE` = `1` | `SHARED_NEEDLES` recommended |
+| `MAT_CURRENT` = `1` | `MAT_MEDICATION` recommended |
+| Any substances submitted | One must have `PRIMARY_SUBSTANCE` = `1` |
+
+### ACT Schema
+
+| Condition | Required Fields |
+|-----------|-----------------|
+| `PSYCHIATRIC_HOSPITALIZATION` = `1` | `HOSPITALIZATION_DAYS` (>0) |
+
+### SC BABY Schema
+
+| Condition | Required Fields |
+|-----------|-----------------|
+| `LIVE_BIRTH` = `1` | `APGAR_1MIN`, `APGAR_5MIN`, `NICU_ADMISSION` |
+| `LIVE_BIRTH` = `0` | `DEATH_DATE` |
+| `NICU_ADMISSION` = `1` | `NICU_DAYS` |
+| `NAS_DIAGNOSIS` = `1` | `NAS_TREATMENT` recommended |
+| `MULTIPLE_BIRTH` = `1` | `BIRTH_ORDER` |
+
+### SC PREGNANCY RISK Schema
+
+| Condition | Required Fields |
+|-----------|-----------------|
+| `PREGNANCY_STATUS` = `1` (Pregnant) | `ESTIMATED_DUE_DATE`, `GESTATIONAL_AGE` |
+| `HIGH_RISK_PREGNANCY` = `1` | `HIGH_RISK_FACTORS` |
+| `MAT_CURRENT` = `1` | `MAT_MEDICATION`, `MAT_DOSE` recommended |
+
+## Validation Logic
+
+Conditional requirements are evaluated using this logic:
+
+```
+IF condition_field = trigger_value THEN
+  required_field MUST NOT be empty
+```
+
+Example:
+```
+IF CHILD_WELFARE_INVOLVEMENT = '1' THEN
+  TRAILS_IDENTIFIER MUST NOT be empty
+```
+
+## Error Messages
+
+Conditional requirement violations produce errors like:
+
+```
+XFD-001: {required_field} required when {condition_field} = {trigger_value}
+```
+
+Example:
+```
+XFD-001: TRAILS_IDENTIFIER required when CHILD_WELFARE_INVOLVEMENT = 1
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Check Conditions First" icon="check">
+    Before submitting, verify which conditional fields apply to your records
+  </Card>
+  <Card title="Use Templates" icon="file">
+    Templates include all fields - conditionally required fields clearly marked
+  </Card>
+  <Card title="Validate Before Submit" icon="shield-check">
+    Run validation to catch missing conditional fields
+  </Card>
+  <Card title="Document Decisions" icon="clipboard">
+    When a conditional field doesn't apply, leave it empty (don't use placeholders)
+  </Card>
+</CardGroup>

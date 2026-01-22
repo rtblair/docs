@@ -1,0 +1,196 @@
+---
+title: 'CLIENT Schema (CLI)'
+description: 'Core client demographics and identifiers'
+icon: 'user'
+---
+
+<Info>
+**Record Type:** `CLI` | **Version:** 2025 UDM | **Parent:** None | **Children:** ADMISSION
+</Info>
+
+## Overview
+
+The CLIENT schema captures core demographic information for individuals receiving behavioral health services. This is the root record type - all other records reference a client through the `BHASO_CLIENT_IDENTIFIER`.
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `CLI` | Must be exact | `CLI` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | See [Transaction Types](/getting-started/transaction-types) | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Unique per BHASO | `CLT-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | Cannot be future | `2024-01-15` |
+| `DOB` | Date of Birth | `date` | YYYY-MM-DD | Must be ≤ today, age ≤ 120 | `1990-05-15` |
+| `LAST_NAME` | Last Name | `x(50)` | Text | Required | `Smith` |
+| `FIRST_NAME` | First Name | `x(50)` | Text | Required | `Jane` |
+| `SEX` | Sex at Birth | `x(1)` | See [Gender Codes](/reference/appendix-a/gender-codes) | Code value | `F` |
+| `RACE` | Race | `x(50)` | See [Race/Ethnicity](/reference/appendix-a/race-ethnicity) | Multi-value (`; ` delimited) | `05; 06` |
+| `ETHNICITY` | Ethnicity | `x(2)` | See [Race/Ethnicity](/reference/appendix-a/race-ethnicity) | Code value | `1` |
+| `COUNTY_CODE` | County of Residence | `x(3)` | See [Counties](/reference/appendix-a/counties) | 3-digit FIPS | `031` |
+
+### Conditional Fields
+
+| BHA Column Name | Field Name | Format | Condition | Constraints | Example |
+|-----------------|------------|--------|-----------|-------------|---------|
+| `TRAILS_IDENTIFIER` | TRAILS ID | `x(20)` | Required if `CHILD_WELFARE_INVOLVEMENT` = `1` | Valid TRAILS format | `TRL-12345` |
+| `MEDICAID_ID` | Medicaid ID | `x(12)` | Required if `MEDICAID_ELIGIBLE` = `1` | 12-digit format | `123456789012` |
+| `SSN_LAST_4` | SSN Last 4 | `x(4)` | Required if available | 4 digits | `1234` |
+
+### Optional Fields
+
+| BHA Column Name | Field Name | Format | Default | Constraints | Example |
+|-----------------|------------|--------|---------|-------------|---------|
+| `MIDDLE_NAME` | Middle Name | `x(50)` | NULL | Text | `Marie` |
+| `SUFFIX` | Name Suffix | `x(10)` | NULL | Text | `Jr.` |
+| `PREFERRED_NAME` | Preferred Name | `x(50)` | NULL | Text | `Jamie` |
+| `GENDER_IDENTITY` | Gender Identity | `x(2)` | NULL | See [Gender Codes](/reference/appendix-a/gender-codes) | `02` |
+| `SEXUAL_ORIENTATION` | Sexual Orientation | `x(2)` | NULL | See [Gender Codes](/reference/appendix-a/gender-codes) | `01` |
+| `PRIMARY_LANGUAGE` | Primary Language | `x(3)` | `ENG` | ISO 639-2 code | `SPA` |
+| `ADDRESS_LINE_1` | Street Address | `x(100)` | NULL | Text | `123 Main St` |
+| `ADDRESS_LINE_2` | Address Line 2 | `x(100)` | NULL | Text | `Apt 4B` |
+| `CITY` | City | `x(50)` | NULL | Text | `Denver` |
+| `STATE` | State | `x(2)` | `CO` | 2-letter code | `CO` |
+| `ZIP_CODE` | ZIP Code | `x(10)` | NULL | 5 or 9 digit | `80202` |
+| `PHONE` | Phone Number | `x(15)` | NULL | Digits only | `3035551234` |
+| `EMAIL` | Email Address | `x(100)` | NULL | Valid email format | `jane@example.com` |
+| `CHILD_WELFARE_INVOLVEMENT` | Child Welfare | `x(1)` | `0` | `0` or `1` | `0` |
+| `MEDICAID_ELIGIBLE` | Medicaid Eligible | `x(1)` | `0` | `0` or `1` | `1` |
+| `VETERAN_STATUS` | Veteran Status | `x(1)` | NULL | `0`, `1`, or NULL | `0` |
+| `DISABILITY_CODES` | Disabilities | `x(50)` | NULL | Multi-value (`; ` delimited) | `01; 03` |
+
+<Snippet file="metadata-fields.mdx" />
+
+---
+
+## 2. Examples
+
+### Minimal Valid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,DOB,LAST_NAME,FIRST_NAME,SEX,RACE,ETHNICITY,COUNTY_CODE
+CLI,A,CLT-000001,2024-01-15,1990-05-15,Smith,Jane,F,05,2,031
+```
+
+### Complete Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,DOB,LAST_NAME,FIRST_NAME,MIDDLE_NAME,SUFFIX,PREFERRED_NAME,SEX,GENDER_IDENTITY,SEXUAL_ORIENTATION,RACE,ETHNICITY,PRIMARY_LANGUAGE,COUNTY_CODE,ADDRESS_LINE_1,ADDRESS_LINE_2,CITY,STATE,ZIP_CODE,PHONE,EMAIL,CHILD_WELFARE_INVOLVEMENT,TRAILS_IDENTIFIER,MEDICAID_ELIGIBLE,MEDICAID_ID,SSN_LAST_4,VETERAN_STATUS,DISABILITY_CODES
+CLI,A,CLT-000001,2024-01-15,1990-05-15,Smith,Jane,Marie,,Jamie,F,02,01,05; 06,2,ENG,031,123 Main St,Apt 4B,Denver,CO,80202,3035551234,jane.smith@email.com,0,,1,123456789012,1234,0,
+CLI,A,CLT-000002,2024-01-15,1985-03-20,Garcia,Carlos,Antonio,Jr.,,M,01,01,03,1,SPA,001,456 Oak Ave,,Aurora,CO,80010,7205559876,carlos.garcia@email.com,1,TRL-54321,1,987654321098,5678,1,01; 03
+CLI,A,CLT-000003,2024-01-16,2010-11-08,Johnson,Alex,,,Alex,M,03,03,05; 07,2,ENG,005,789 Pine Rd,,Boulder,CO,80301,,,0,,0,,9012,0,
+```
+
+### Edge Cases
+
+```csv
+# International characters in name
+CLI,A,CLT-000004,2024-01-15,1975-07-22,O'Brien-López,María José,Ñ,III,,F,01,01,03; 05,1,SPA,031,"123 Calle Principal, Suite 100",,Denver,CO,80202,,,0,,0,,,
+
+# Multi-racial individual with multiple disabilities
+CLI,A,CLT-000005,2024-01-15,1988-12-01,Washington,Kenji,,,,M,01,02,02; 05; 07,2,ENG,041,,,Colorado Springs,CO,80903,,,0,,1,111222333444,,0,01; 02; 04
+```
+
+### Invalid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,DOB,LAST_NAME,FIRST_NAME,SEX,RACE,ETHNICITY,COUNTY_CODE,CHILD_WELFARE_INVOLVEMENT,TRAILS_IDENTIFIER
+CLI,A,,2024-01-15,1990-05-15,Smith,Jane,F,05,2,031,0,
+CLI,A,CLT-000002,01/15/2024,1990-05-15,Garcia,,X,99,5,999,1,
+```
+
+**Errors:**
+- Row 1: `CLI-001` - BHASO_CLIENT_IDENTIFIER is required
+- Row 2: `FLD-002` - EFFECTIVE_DATE must be in YYYY-MM-DD format
+- Row 2: `CLI-003` - FIRST_NAME is required
+- Row 2: `FLD-003` - SEX value 'X' not in allowed values
+- Row 2: `FLD-003` - RACE value '99' not in allowed values
+- Row 2: `FLD-003` - COUNTY_CODE '999' not valid
+- Row 2: `XFD-001` - TRAILS_IDENTIFIER required when CHILD_WELFARE_INVOLVEMENT = 1
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `CLI-001` | BHASO_CLIENT_IDENTIFIER is required | Provide unique client identifier |
+| `CLI-002` | DOB must be valid date in YYYY-MM-DD format | Check date format |
+| `CLI-003` | FIRST_NAME is required | Provide first name |
+| `CLI-004` | LAST_NAME is required | Provide last name |
+| `CLI-005` | SEX is required | Provide sex at birth code |
+| `CLI-006` | RACE is required | Provide at least one race code |
+| `CLI-007` | ETHNICITY is required | Provide ethnicity code |
+| `CLI-008` | COUNTY_CODE is required | Provide valid Colorado county code |
+| `CLI-009` | Duplicate BHASO_CLIENT_IDENTIFIER | Use Update (U) for existing clients |
+| `CLI-010` | DOB indicates age > 120 years | Verify date of birth |
+| `CLI-011` | DOB is in the future | DOB cannot be after today |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| Child Welfare | `CHILD_WELFARE_INVOLVEMENT`, `TRAILS_IDENTIFIER` | If `CHILD_WELFARE_INVOLVEMENT` = `1`, then `TRAILS_IDENTIFIER` required |
+| Medicaid | `MEDICAID_ELIGIBLE`, `MEDICAID_ID` | If `MEDICAID_ELIGIBLE` = `1`, then `MEDICAID_ID` required |
+| Age Validation | `DOB` | Calculated age must be 0-120 years |
+| Address Consistency | `ADDRESS_LINE_1`, `CITY`, `STATE`, `ZIP_CODE` | If any address field provided, CITY, STATE, ZIP required |
+
+---
+
+## 4. Template
+
+<Card title="Download CLIENT Template" icon="download" href="/templates/client_template.csv">
+  CLIENT schema template with headers and sample row (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Escape | Doubled quotes (`""`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+| Multi-value Delimiter | Semicolon + space (`; `) for RACE, DISABILITY_CODES |
+
+---
+
+## 6. Update Semantics
+
+### Primary Key
+
+`BHASO_CLIENT_IDENTIFIER` + `EFFECTIVE_DATE`
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates new client record; fails if client+effective_date exists |
+| Update | `U` | Creates new effective-dated version of existing client |
+| Replace | `R` | Overwrites most recent client record (error corrections) |
+
+### Idempotency
+
+- Most recent record determined by `EFFECTIVE_DATE`
+- System uses SCD Type 2 - all historical records retained
+- Query for "current" client returns record with latest `EFFECTIVE_DATE`
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [ADMISSION](/schemas/admission) | Child | `BHASO_CLIENT_IDENTIFIER` |
+| [DISCHARGE](/schemas/discharge) | Grandchild | `BHASO_CLIENT_IDENTIFIER` |

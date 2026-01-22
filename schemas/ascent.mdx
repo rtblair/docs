@@ -1,0 +1,251 @@
+---
+title: 'ASCENT Schema (ASA/ASQ/ASD)'
+description: 'Youth residential treatment program data'
+icon: 'child'
+---
+
+<Info>
+**Record Types:** `ASA` (Admission), `ASQ` (Quarterly), `ASD` (Discharge) | **Version:** 2025 UDM | **Parent:** ADMISSION | **Program:** Youth Residential Treatment
+</Info>
+
+## Overview
+
+The ASCENT schema captures data for youth residential treatment programs. It consists of three record types:
+- **ASA** - Ascent Admission: Initial assessment at program entry
+- **ASQ** - Ascent Quarterly: Quarterly progress assessments
+- **ASD** - Ascent Discharge: Final assessment at program completion
+
+<Note>
+This schema is **only required** for youth enrolled in residential treatment programs. Must be linked to an existing ADMISSION record.
+</Note>
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### ASA - Ascent Admission Fields
+
+#### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `ASA` | Must be exact | `ASA` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Must match admission | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | Must exist in ADMISSION | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | | `2024-01-15` |
+| `ASCENT_ADMISSION_DATE` | Ascent Admission Date | `date` | YYYY-MM-DD | | `2024-01-15` |
+| `PLACEMENT_TYPE` | Placement Type | `x(2)` | Code value | See codes below | `01` |
+| `REFERRAL_SOURCE` | Referral Source | `x(2)` | Code value | | `01` |
+
+#### Placement Type Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Residential Treatment Center |
+| `02` | Group Home |
+| `03` | Therapeutic Foster Care |
+| `04` | Acute Psychiatric Unit |
+
+#### Assessment Fields (Required for ASA)
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `SCHOOL_ENROLLMENT` | School Enrollment | `x(1)` | `0` or `1` | At admission | `1` |
+| `GRADE_LEVEL` | Grade Level | `x(2)` | `K`, `01`-`12` | Current grade | `09` |
+| `CANS_SCORE` | CANS Total Score | `9(3)` | 0-999 | At admission | `45` |
+| `RISK_LEVEL` | Risk Level | `x(1)` | `1`-`5` | 1=Low, 5=High | `4` |
+| `TRAUMA_HISTORY` | Trauma History | `x(1)` | `0` or `1` | Known trauma | `1` |
+
+---
+
+### ASQ - Ascent Quarterly Fields
+
+#### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `ASQ` | Must be exact | `ASQ` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | | `2024-04-15` |
+| `QUARTER_NUMBER` | Quarter Number | `9(1)` | 1-8 | Sequential | `1` |
+| `ASSESSMENT_DATE` | Assessment Date | `date` | YYYY-MM-DD | | `2024-04-15` |
+
+#### Progress Fields (Required for ASQ)
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `CANS_SCORE` | CANS Total Score | `9(3)` | 0-999 | Current | `38` |
+| `TREATMENT_PROGRESS` | Treatment Progress | `x(1)` | `1`-`5` | 1=Regression, 5=Significant improvement | `4` |
+| `SCHOOL_PERFORMANCE` | School Performance | `x(1)` | `1`-`5` | Academic progress | `3` |
+| `BEHAVIORAL_INCIDENTS` | Behavioral Incidents | `9(2)` | 0-99 | During quarter | `3` |
+| `RESTRAINTS` | Physical Restraints | `9(2)` | 0-99 | During quarter | `1` |
+| `AWOL_INCIDENTS` | AWOL Incidents | `9(2)` | 0-99 | During quarter | `0` |
+
+---
+
+### ASD - Ascent Discharge Fields
+
+#### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `ASD` | Must be exact | `ASD` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | | `2024-07-15` |
+| `ASCENT_DISCHARGE_DATE` | Discharge Date | `date` | YYYY-MM-DD | | `2024-07-15` |
+| `DISCHARGE_REASON` | Discharge Reason | `x(2)` | Code value | | `01` |
+| `DISCHARGE_DESTINATION` | Discharge Destination | `x(2)` | Code value | | `01` |
+
+#### Discharge Reason Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Treatment goals met |
+| `02` | Maximum benefit achieved |
+| `03` | Family reunification |
+| `04` | Step-down to lower level of care |
+| `05` | Step-up to higher level of care |
+| `06` | Administrative discharge |
+| `07` | Aged out of program |
+| `08` | Ran away / AWOL |
+| `09` | Incarcerated |
+
+#### Discharge Destination Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Family home |
+| `02` | Foster care |
+| `03` | Group home |
+| `04` | Independent living |
+| `05` | Another residential program |
+| `06` | Hospital |
+| `07` | Detention/Corrections |
+| `08` | Unknown |
+
+#### Outcome Fields (Required for ASD)
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `CANS_SCORE_DISCHARGE` | CANS at Discharge | `9(3)` | 0-999 | | `25` |
+| `LENGTH_OF_STAY` | Length of Stay (Days) | `9(4)` | 1-9999 | | `182` |
+| `TREATMENT_COMPLETION` | Treatment Completion | `x(1)` | `1`-`5` | Completion level | `4` |
+| `SCHOOL_ENROLLMENT_DISCHARGE` | School at Discharge | `x(1)` | `0` or `1` | | `1` |
+| `AFTERCARE_PLAN` | Aftercare Plan | `x(1)` | `0` or `1` | | `1` |
+
+---
+
+## 2. Examples
+
+### ASA - Admission Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ASCENT_ADMISSION_DATE,PLACEMENT_TYPE,REFERRAL_SOURCE,SCHOOL_ENROLLMENT,GRADE_LEVEL,CANS_SCORE,RISK_LEVEL,TRAUMA_HISTORY
+ASA,A,CLT-000001,CSE-000001,2024-01-15,2024-01-15,01,01,1,09,45,4,1
+```
+
+### ASQ - Quarterly Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,QUARTER_NUMBER,ASSESSMENT_DATE,CANS_SCORE,TREATMENT_PROGRESS,SCHOOL_PERFORMANCE,BEHAVIORAL_INCIDENTS,RESTRAINTS,AWOL_INCIDENTS
+ASQ,A,CLT-000001,CSE-000001,2024-04-15,1,2024-04-15,38,4,3,3,1,0
+ASQ,A,CLT-000001,CSE-000001,2024-07-15,2,2024-07-15,30,4,4,1,0,0
+```
+
+### ASD - Discharge Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ASCENT_DISCHARGE_DATE,DISCHARGE_REASON,DISCHARGE_DESTINATION,CANS_SCORE_DISCHARGE,LENGTH_OF_STAY,TREATMENT_COMPLETION,SCHOOL_ENROLLMENT_DISCHARGE,AFTERCARE_PLAN
+ASD,A,CLT-000001,CSE-000001,2024-07-15,2024-07-15,01,01,25,182,4,1,1
+```
+
+### Complete Episode Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ASCENT_ADMISSION_DATE,PLACEMENT_TYPE,REFERRAL_SOURCE,SCHOOL_ENROLLMENT,GRADE_LEVEL,CANS_SCORE,RISK_LEVEL,TRAUMA_HISTORY,QUARTER_NUMBER,ASSESSMENT_DATE,TREATMENT_PROGRESS,SCHOOL_PERFORMANCE,BEHAVIORAL_INCIDENTS,RESTRAINTS,AWOL_INCIDENTS,ASCENT_DISCHARGE_DATE,DISCHARGE_REASON,DISCHARGE_DESTINATION,CANS_SCORE_DISCHARGE,LENGTH_OF_STAY,TREATMENT_COMPLETION,SCHOOL_ENROLLMENT_DISCHARGE,AFTERCARE_PLAN
+ASA,A,CLT-000001,CSE-000001,2024-01-15,2024-01-15,01,01,1,09,45,4,1,,,,,,,,,,,,,,,
+ASQ,A,CLT-000001,CSE-000001,2024-04-15,,,,,,,,,1,2024-04-15,4,3,3,1,0,,,,,,,
+ASQ,A,CLT-000001,CSE-000001,2024-07-15,,,,,,,,,2,2024-07-15,4,4,1,0,0,,,,,,,
+ASD,A,CLT-000001,CSE-000001,2024-10-15,,,,,,,,,,,,,,,2024-10-15,01,01,25,273,4,1,1
+```
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `ASA-001` | ASCENT_ADMISSION_DATE is required | Provide admission date |
+| `ASA-002` | PLACEMENT_TYPE is required | Provide valid placement code |
+| `ASA-003` | ASA record must be submitted before ASQ or ASD | Submit admission first |
+| `ASQ-001` | QUARTER_NUMBER must be sequential | Check quarter numbering |
+| `ASQ-002` | ASA record not found | Submit ASA record first |
+| `ASD-001` | DISCHARGE_DESTINATION is required | Provide destination code |
+| `ASD-002` | ASA record not found | Submit ASA record first |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| Record Sequence | ASA → ASQ → ASD | Must follow admission order |
+| Quarter Sequence | `QUARTER_NUMBER` | Must be sequential (1, 2, 3...) |
+| Date Order | All dates | Quarterly dates must be after admission |
+| Discharge | ASD | Cannot have ASD without ASA |
+
+---
+
+## 4. Template
+
+<Card title="Download ASCENT Template" icon="download" href="/templates/ascent_template.csv">
+  ASCENT schema template with headers and sample rows (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+
+---
+
+## 6. Update Semantics
+
+### Primary Keys
+
+| Record Type | Primary Key |
+|-------------|-------------|
+| ASA | `BHASO_CASE_IDENTIFIER` (one per admission) |
+| ASQ | `BHASO_CASE_IDENTIFIER` + `QUARTER_NUMBER` |
+| ASD | `BHASO_CASE_IDENTIFIER` (one per admission) |
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates new record |
+| Update | `U` | Updates existing record |
+| Replace | `R` | Overwrites record |
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [ADMISSION](/schemas/admission) | Parent | `BHASO_CASE_IDENTIFIER` |
+| [CLIENT](/schemas/client) | Grandparent | `BHASO_CLIENT_IDENTIFIER` |

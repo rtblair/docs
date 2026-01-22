@@ -1,0 +1,103 @@
+---
+title: 'Living Situation Codes'
+description: 'Housing and living arrangement codes'
+icon: 'house'
+---
+
+## Overview
+
+The `LIVING_SITUATION` field captures the client's housing status at admission and discharge. This information is critical for understanding social determinants of health and tracking housing outcomes.
+
+## Living Situation Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Independent - Own/Rent |
+| `02` | Living with Family |
+| `03` | Living with Friends |
+| `04` | Sober Living/Recovery Housing |
+| `05` | Homeless - Shelter |
+| `06` | Homeless - Street/Unsheltered |
+| `07` | Homeless - Transitional Housing |
+| `08` | Residential Treatment Facility |
+| `09` | Halfway House |
+| `10` | Nursing Home/Long-Term Care |
+| `11` | Jail/Prison |
+| `12` | Hospital |
+| `13` | Foster Care |
+| `14` | Group Home (Youth) |
+| `15` | Assisted Living |
+| `16` | Hotel/Motel (Temporary) |
+| `17` | Doubled Up (with others due to economic hardship) |
+| `97` | Unknown |
+| `99` | Other |
+
+## Usage Example
+
+```csv
+LIVING_SITUATION
+01
+```
+
+## Living Situation Categories
+
+### Stable Housing (01-03)
+Permanent housing arrangements:
+- **Independent** - Client maintains own residence
+- **Family** - Living with family members
+- **Friends** - Living with friends
+
+### Recovery Housing (04, 09)
+Structured living environments supporting recovery:
+- **Sober Living** - Drug/alcohol-free housing
+- **Halfway House** - Transitional recovery residence
+
+### Homeless/Unstable (05-07, 16-17)
+Housing instability or homelessness:
+- **Shelter** - Emergency or temporary shelter
+- **Unsheltered** - Streets, cars, encampments
+- **Transitional** - Time-limited housing program
+- **Hotel/Motel** - Temporary paid accommodation
+- **Doubled Up** - Staying with others due to hardship
+
+### Institutional (08, 10-15)
+Residential facilities or institutions:
+- **Residential Treatment** - Current treatment facility
+- **Nursing Home** - Long-term care
+- **Jail/Prison** - Incarcerated
+- **Hospital** - Currently hospitalized
+- **Foster Care** - State custody (youth)
+- **Group Home** - Youth residential setting
+- **Assisted Living** - Supportive housing for elderly/disabled
+
+## Tracking Housing Changes
+
+Compare `LIVING_SITUATION` between admission and discharge to measure housing outcomes:
+
+```csv
+# Admission - Homeless at shelter
+RECORD_TYPE,LIVING_SITUATION
+ADM,05
+
+# Discharge - Independent housing
+RECORD_TYPE,LIVING_SITUATION
+DIS,01
+```
+
+<Note>
+Housing stability is a key outcome measure. Track transitions from unstable (05-07, 16-17) to stable (01-04) housing.
+</Note>
+
+## Special Populations
+
+### Youth
+For clients under 18, consider:
+- `13` (Foster Care)
+- `14` (Group Home)
+- `02` (Living with Family)
+
+### Older Adults
+For elderly clients, consider:
+- `10` (Nursing Home)
+- `15` (Assisted Living)
+- `01` (Independent with supports)

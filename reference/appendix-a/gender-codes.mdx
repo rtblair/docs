@@ -1,0 +1,110 @@
+---
+title: 'Gender Codes'
+description: 'Sex at birth, gender identity, and sexual orientation codes'
+icon: 'person'
+---
+
+## Overview
+
+The CoBHRM data model captures three distinct concepts:
+- **Sex at Birth** - Biological sex assigned at birth
+- **Gender Identity** - Client's self-identified gender
+- **Sexual Orientation** - Client's self-identified sexual orientation
+
+## Sex at Birth Codes
+
+The `SEX` field captures biological sex assigned at birth.
+
+| Code | Description |
+|------|-------------|
+| `M` | Male |
+| `F` | Female |
+| `U` | Unknown |
+
+### Usage
+
+```csv
+SEX
+F
+```
+
+## Gender Identity Codes
+
+The `GENDER_IDENTITY` field captures self-identified gender.
+
+| Code | Description |
+|------|-------------|
+| `01` | Male |
+| `02` | Female |
+| `03` | Transgender Male (Female-to-Male) |
+| `04` | Transgender Female (Male-to-Female) |
+| `05` | Non-Binary |
+| `06` | Genderqueer/Gender Non-conforming |
+| `07` | Two-Spirit |
+| `08` | Questioning |
+| `97` | Don't Know |
+| `98` | Refused to Answer |
+| `99` | Not Collected |
+
+### Usage
+
+```csv
+GENDER_IDENTITY
+02
+```
+
+## Sexual Orientation Codes
+
+The `SEXUAL_ORIENTATION` field captures self-identified sexual orientation.
+
+| Code | Description |
+|------|-------------|
+| `01` | Heterosexual or Straight |
+| `02` | Gay |
+| `03` | Lesbian |
+| `04` | Bisexual |
+| `05` | Queer |
+| `06` | Pansexual |
+| `07` | Asexual |
+| `08` | Questioning |
+| `97` | Don't Know |
+| `98` | Refused to Answer |
+| `99` | Not Collected |
+
+### Usage
+
+```csv
+SEXUAL_ORIENTATION
+01
+```
+
+## Complete Example
+
+```csv
+SEX,GENDER_IDENTITY,SEXUAL_ORIENTATION
+F,02,01
+```
+
+In this example:
+- Sex at birth: Female
+- Gender identity: Female (cisgender)
+- Sexual orientation: Heterosexual
+
+## Collection Guidelines
+
+<Tip>
+These fields should be self-reported by the client. Do not make assumptions based on appearance or other characteristics.
+</Tip>
+
+### Best Practices
+
+1. **Ensure privacy** - Collect in private setting
+2. **Use client's terminology** - Record what client reports
+3. **Explain purpose** - Help clients understand why data is collected
+4. **Respect refusals** - Use code `98` when client declines
+5. **Offer "Questioning"** - For clients exploring their identity
+
+### Special Populations
+
+- For minors, follow guardian consent requirements
+- For clients with cognitive impairments, document capacity to self-report

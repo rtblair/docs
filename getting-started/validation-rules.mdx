@@ -1,0 +1,218 @@
+---
+title: 'Validation Rules'
+description: 'Common validation errors and how to resolve them'
+icon: 'shield-check'
+---
+
+<Info>
+This page documents **Principle #3: Validation Surface** - what errors can occur and how to resolve them.
+</Info>
+
+## Validation Levels
+
+Data validation occurs at multiple levels:
+
+| Level | Scope | Example |
+|-------|-------|---------|
+| **File-Level** | Entire file | Invalid encoding, missing headers |
+| **Row-Level** | Single record | Missing required field, invalid date format |
+| **Field-Level** | Single field | Invalid code value, format mismatch |
+| **Cross-Field** | Multiple fields in same record | Conditional requirements |
+| **Cross-Record** | Multiple records | Foreign key validation |
+
+## Error Response Format
+
+Validation errors are returned in a structured format:
+
+```json
+{
+  "status": "partial_success",
+  "total_rows": 100,
+  "successful_rows": 95,
+  "failed_rows": 5,
+  "errors": [
+    {
+      "row": 12,
+      "field": "DOB",
+      "code": "CLI-002",
+      "message": "DOB must be a valid date in YYYY-MM-DD format",
+      "value": "1990/05/15"
+    }
+  ]
+}
+```
+
+## Partial Success Behavior
+
+<Warning>
+The system uses **partial success** processing. Valid rows are imported even if some rows fail validation. Review the error report to identify and resubmit failed rows.
+</Warning>
+
+| Scenario | Behavior |
+|----------|----------|
+| All rows valid | All rows imported, success response |
+| Some rows invalid | Valid rows imported, errors returned for invalid rows |
+| All rows invalid | No rows imported, all errors returned |
+| File-level error | Entire file rejected, no rows imported |
+
+## Common Error Codes
+
+### File-Level Errors
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `FILE-001` | Invalid file encoding | Re-save as UTF-8 |
+| `FILE-002` | Missing header row | Add header row with column names |
+| `FILE-003` | Missing required column: `{column}` | Add the missing column to header |
+| `FILE-004` | File exceeds maximum size | Split into smaller files |
+| `FILE-005` | Invalid CSV structure | Check for unescaped quotes or delimiters |
+
+### Row-Level Errors
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `ROW-001` | Empty row | Remove empty rows from file |
+| `ROW-002` | Column count mismatch | Ensure row has same number of fields as header |
+| `ROW-003` | Duplicate primary key | Use Update (U) instead of Add (A) |
+| `ROW-004` | Record not found for Update/Replace | Verify identifiers or use Add (A) |
+
+### Field-Level Errors
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `FLD-001` | Required field is empty | Provide a value for the required field |
+| `FLD-002` | Invalid date format | Use YYYY-MM-DD format |
+| `FLD-003` | Invalid code value | Use value from Appendix A code table |
+| `FLD-004` | Value exceeds maximum length | Truncate to allowed length |
+| `FLD-005` | Invalid numeric format | Check decimal places and range |
+| `FLD-006` | Future date not allowed | Use date on or before today |
+| `FLD-007` | Invalid identifier format | Check identifier pattern requirements |
+
+### Cross-Field Errors
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `XFD-001` | `{field1}` required when `{field2}` = `{value}` | Provide conditionally required field |
+| `XFD-002` | `{field1}` must be after `{field2}` | Check date ordering |
+| `XFD-003` | `{field1}` and `{field2}` are mutually exclusive | Provide only one of the fields |
+| `XFD-004` | Invalid combination: `{field1}={value1}`, `{field2}={value2}` | Check valid value combinations |
+
+### Referential Errors
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `REF-001` | Client not found: `{client_id}` | Submit CLIENT record first |
+| `REF-002` | Admission not found: `{case_id}` | Submit ADMISSION record first |
+| `REF-003` | Parent record required | Submit parent record before child |
+
+## Schema-Specific Validation
+
+Each schema has specific validation rules documented on its respective page:
+
+<CardGroup cols={2}>
+  <Card title="CLIENT Validation" icon="user" href="/schemas/client#validation-rules">
+    Client-specific error codes (CLI-xxx)
+  </Card>
+  <Card title="ADMISSION Validation" icon="door-open" href="/schemas/admission#validation-rules">
+    Admission-specific error codes (ADM-xxx)
+  </Card>
+  <Card title="DISCHARGE Validation" icon="door-closed" href="/schemas/discharge#validation-rules">
+    Discharge-specific error codes (DIS-xxx)
+  </Card>
+  <Card title="DIAGNOSIS Validation" icon="stethoscope" href="/schemas/diagnosis#validation-rules">
+    Diagnosis-specific error codes (DXA-xxx, DXD-xxx)
+  </Card>
+</CardGroup>
+
+## Validation Examples
+
+### Example 1: Missing Required Field
+
+**Input:**
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,DOB,LAST_NAME,FIRST_NAME
+CLI,A,,2024-01-15,1990-05-15,Smith,Jane
+```
+
+**Error:**
+```
+Row 1: CLI-001 - BHASO_CLIENT_IDENTIFIER is required
+```
+
+**Resolution:** Provide a unique client identifier.
+
+---
+
+### Example 2: Invalid Date Format
+
+**Input:**
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,DOB,LAST_NAME,FIRST_NAME
+CLI,A,CLT-001,01/15/2024,1990-05-15,Smith,Jane
+```
+
+**Error:**
+```
+Row 1: FLD-002 - EFFECTIVE_DATE must be in YYYY-MM-DD format
+```
+
+**Resolution:** Change `01/15/2024` to `2024-01-15`.
+
+---
+
+### Example 3: Invalid Code Value
+
+**Input:**
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,SEX,LAST_NAME,FIRST_NAME
+CLI,A,CLT-001,2024-01-15,X,Smith,Jane
+```
+
+**Error:**
+```
+Row 1: FLD-003 - SEX value 'X' not in allowed values. See Appendix A.
+```
+
+**Resolution:** Use a valid sex code from the [Gender Codes](/reference/appendix-a/gender-codes) reference.
+
+---
+
+### Example 4: Conditional Requirement
+
+**Input:**
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,CHILD_WELFARE_INVOLVEMENT,TRAILS_IDENTIFIER
+CLI,A,CLT-001,1,
+```
+
+**Error:**
+```
+Row 1: XFD-001 - TRAILS_IDENTIFIER required when CHILD_WELFARE_INVOLVEMENT = 1
+```
+
+**Resolution:** Provide `TRAILS_IDENTIFIER` when child welfare involvement is indicated.
+
+## Pre-Submission Checklist
+
+<Steps>
+  <Step title="File Format">
+    - [ ] File is saved as UTF-8
+    - [ ] File has .csv extension
+    - [ ] Header row is present with all required columns
+  </Step>
+  <Step title="Required Fields">
+    - [ ] All required fields have values
+    - [ ] RECORD_TYPE matches the schema
+    - [ ] TRANSACTION_TYPE is A, U, or R
+  </Step>
+  <Step title="Data Formats">
+    - [ ] Dates are in YYYY-MM-DD format
+    - [ ] Code values match Appendix A
+    - [ ] Identifiers follow required patterns
+  </Step>
+  <Step title="Relationships">
+    - [ ] Parent records exist before submitting child records
+    - [ ] BHASO_CLIENT_IDENTIFIER values are consistent
+    - [ ] BHASO_CASE_IDENTIFIER values match admission records
+  </Step>
+</Steps>

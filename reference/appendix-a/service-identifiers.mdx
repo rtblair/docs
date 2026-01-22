@@ -1,0 +1,90 @@
+---
+title: 'Service Identifiers'
+description: 'Service type and treatment modality codes'
+icon: 'clipboard-list'
+---
+
+## Overview
+
+Service identifiers classify the type of behavioral health service being provided. The `SERVICE_IDENTIFIER` field is required on ADMISSION records to identify the primary treatment modality.
+
+## Service Type Codes
+
+| Code | Description | Category |
+|------|-------------|----------|
+| `001` | Outpatient - Individual | Outpatient |
+| `002` | Outpatient - Group | Outpatient |
+| `003` | Intensive Outpatient (IOP) | Outpatient |
+| `004` | Partial Hospitalization (PHP) | Outpatient |
+| `005` | Day Treatment | Outpatient |
+| `010` | Residential - Short Term (<30 days) | Residential |
+| `011` | Residential - Long Term (≥30 days) | Residential |
+| `012` | Residential - Detoxification | Residential |
+| `013` | Residential - Therapeutic Community | Residential |
+| `020` | Inpatient - Acute Psychiatric | Inpatient |
+| `021` | Inpatient - Detoxification | Inpatient |
+| `030` | Case Management | Support Services |
+| `031` | Peer Support Services | Support Services |
+| `032` | Supported Employment | Support Services |
+| `033` | Supported Housing | Support Services |
+| `040` | Medication-Assisted Treatment (MAT) | MAT |
+| `041` | Opioid Treatment Program (OTP) | MAT |
+| `042` | Office-Based Opioid Treatment (OBOT) | MAT |
+| `050` | Crisis Stabilization | Crisis |
+| `051` | Mobile Crisis | Crisis |
+| `052` | Crisis Respite | Crisis |
+| `060` | Assertive Community Treatment (ACT) | Intensive |
+| `061` | Forensic Services | Specialized |
+| `062` | Co-Occurring Treatment | Specialized |
+| `070` | Youth Residential Treatment | Youth |
+| `071` | Youth Day Treatment | Youth |
+| `072` | Youth Outpatient | Youth |
+| `099` | Other | Other |
+
+## Service Category Descriptions
+
+### Outpatient Services (001-005)
+Non-residential treatment where clients attend scheduled appointments.
+
+### Residential Services (010-013)
+24-hour care in a treatment facility with varying intensity levels.
+
+### Inpatient Services (020-021)
+Hospital-based treatment for acute conditions.
+
+### Support Services (030-033)
+Wraparound services supporting recovery.
+
+### MAT Services (040-042)
+Medication-assisted treatment for substance use disorders.
+
+### Crisis Services (050-052)
+Immediate intervention for behavioral health emergencies.
+
+### Intensive Services (060)
+High-intensity community-based treatment.
+
+### Specialized Services (061-062)
+Services for specific populations or conditions.
+
+### Youth Services (070-072)
+Services specifically designed for youth (under 18).
+
+## Usage Example
+
+```csv
+SERVICE_IDENTIFIER
+001
+```
+
+## Service Level Transitions
+
+When a client transitions between service levels:
+
+1. Discharge from current service
+2. Create new admission with new service identifier
+3. Link via `BHASO_CLIENT_IDENTIFIER`
+
+<Note>
+A client may have multiple active admissions for different service types (e.g., outpatient therapy + MAT).
+</Note>

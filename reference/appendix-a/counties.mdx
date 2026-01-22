@@ -1,0 +1,107 @@
+---
+title: 'County Codes'
+description: 'Colorado county FIPS codes for residence and service locations'
+icon: 'location-dot'
+---
+
+## Overview
+
+County codes use the standard 3-digit Federal Information Processing Standard (FIPS) codes for Colorado counties. These codes are used in fields like `COUNTY_CODE` to identify client residence or service delivery location.
+
+## County Code Table
+
+| Code | County Name | Region |
+|------|-------------|--------|
+| `001` | Adams | Metro Denver |
+| `003` | Alamosa | San Luis Valley |
+| `005` | Arapahoe | Metro Denver |
+| `007` | Archuleta | Southwest |
+| `009` | Baca | Southeast |
+| `011` | Bent | Southeast |
+| `013` | Boulder | North Central |
+| `014` | Broomfield | Metro Denver |
+| `015` | Chaffee | Central Mountain |
+| `017` | Cheyenne | Eastern Plains |
+| `019` | Clear Creek | Central Mountain |
+| `021` | Conejos | San Luis Valley |
+| `023` | Costilla | San Luis Valley |
+| `025` | Crowley | Southeast |
+| `027` | Custer | Central Mountain |
+| `029` | Delta | Western Slope |
+| `031` | Denver | Metro Denver |
+| `033` | Dolores | Southwest |
+| `035` | Douglas | Metro Denver |
+| `037` | Eagle | Northwest |
+| `039` | Elbert | Eastern Plains |
+| `041` | El Paso | Pikes Peak |
+| `043` | Fremont | Central Mountain |
+| `045` | Garfield | Northwest |
+| `047` | Gilpin | Central Mountain |
+| `049` | Grand | Northwest |
+| `051` | Gunnison | Western Slope |
+| `053` | Hinsdale | Southwest |
+| `055` | Huerfano | South Central |
+| `057` | Jackson | North Central |
+| `059` | Jefferson | Metro Denver |
+| `061` | Kiowa | Eastern Plains |
+| `063` | Kit Carson | Eastern Plains |
+| `065` | Lake | Central Mountain |
+| `067` | La Plata | Southwest |
+| `069` | Larimer | North Central |
+| `071` | Las Animas | South Central |
+| `073` | Lincoln | Eastern Plains |
+| `075` | Logan | Northeast |
+| `077` | Mesa | Western Slope |
+| `079` | Mineral | San Luis Valley |
+| `081` | Moffat | Northwest |
+| `083` | Montezuma | Southwest |
+| `085` | Montrose | Western Slope |
+| `087` | Morgan | Northeast |
+| `089` | Otero | Southeast |
+| `091` | Ouray | Western Slope |
+| `093` | Park | Central Mountain |
+| `095` | Phillips | Northeast |
+| `097` | Pitkin | Northwest |
+| `099` | Prowers | Southeast |
+| `101` | Pueblo | South Central |
+| `103` | Rio Blanco | Northwest |
+| `105` | Rio Grande | San Luis Valley |
+| `107` | Routt | Northwest |
+| `109` | Saguache | San Luis Valley |
+| `111` | San Juan | Southwest |
+| `113` | San Miguel | Southwest |
+| `115` | Sedgwick | Northeast |
+| `117` | Summit | Central Mountain |
+| `119` | Teller | Pikes Peak |
+| `121` | Washington | Eastern Plains |
+| `123` | Weld | North Central |
+| `125` | Yuma | Northeast |
+
+## Special Codes
+
+| Code | Description |
+|------|-------------|
+| `999` | Unknown / Not Reported |
+| `000` | Out of State |
+
+## Usage Examples
+
+```csv
+# Denver County
+COUNTY_CODE
+031
+
+# Boulder County
+COUNTY_CODE
+013
+
+# Unknown
+COUNTY_CODE
+999
+```
+
+## Notes
+
+- All codes are 3 digits with leading zeros
+- Use `000` for clients residing outside Colorado
+- Use `999` only when county cannot be determined

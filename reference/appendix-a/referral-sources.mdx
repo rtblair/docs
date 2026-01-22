@@ -1,0 +1,86 @@
+---
+title: 'Referral Sources'
+description: 'Referral source classification codes'
+icon: 'share'
+---
+
+## Overview
+
+The `REFERRAL_SOURCE` field identifies how the client came to receive services. This helps track pathways into treatment and informs service planning.
+
+## Referral Source Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Self-Referral |
+| `02` | Family/Friend |
+| `03` | Primary Care Physician |
+| `04` | Psychiatrist/Psychologist |
+| `05` | Other Health Care Provider |
+| `06` | Hospital - Emergency Room |
+| `07` | Hospital - Inpatient |
+| `08` | Community Mental Health Center |
+| `09` | Substance Abuse Treatment Provider |
+| `10` | School/Educational Institution |
+| `11` | Employer/EAP |
+| `12` | Court/Criminal Justice - General |
+| `13` | Court/Criminal Justice - DUI/DWI |
+| `14` | Court/Criminal Justice - Drug Court |
+| `15` | Probation/Parole |
+| `16` | Police/Law Enforcement |
+| `17` | Child Welfare/CPS |
+| `18` | Juvenile Justice |
+| `19` | Managed Care Organization |
+| `20` | Community Service Agency |
+| `21` | Religious Organization |
+| `22` | Veterans Administration |
+| `23` | Tribal Council/Indian Health Service |
+| `24` | Homeless Shelter/Outreach |
+| `25` | Crisis Hotline/Mobile Crisis |
+| `97` | Unknown |
+| `98` | Refused |
+| `99` | Other |
+
+## Usage Example
+
+```csv
+REFERRAL_SOURCE
+03
+```
+
+## Referral Categories
+
+### Self/Informal (01-02)
+Client initiates treatment without formal referral.
+
+### Healthcare (03-09)
+Referral from medical or behavioral health providers.
+
+### Educational (10)
+Referral from schools, colleges, or educational programs.
+
+### Employment (11)
+Referral through workplace or employee assistance programs.
+
+### Criminal Justice (12-18)
+Court-ordered or criminal justice system referrals.
+
+### Insurance/Managed Care (19)
+Referral through health plan or care manager.
+
+### Community (20-25)
+Referral from community organizations and services.
+
+## Criminal Justice Referrals
+
+<Note>
+When `REFERRAL_SOURCE` is a criminal justice code (12-18), the `CRIMINAL_JUSTICE_REFERRAL` field should be set to `1`.
+</Note>
+
+### Court-Ordered Treatment
+
+For court-ordered clients:
+1. Set appropriate referral source (12-16)
+2. Set `CRIMINAL_JUSTICE_REFERRAL` = `1`
+3. Include `COURT_CASE_NUMBER` if applicable
+4. Set appropriate `LEGAL_STATUS`

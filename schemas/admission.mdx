@@ -1,0 +1,197 @@
+---
+title: 'ADMISSION Schema (ADM)'
+description: 'Treatment episode admission records'
+icon: 'door-open'
+---
+
+<Info>
+**Record Type:** `ADM` | **Version:** 2025 UDM | **Parent:** CLIENT | **Children:** DISCHARGE, DIAGNOSIS, SUBSTANCE USE, ACT, ASCENT, SC_BABY, SC_PREGNANCY_RISK
+</Info>
+
+## Overview
+
+The ADMISSION schema captures information about the start of a treatment episode. Each admission creates a unique `BHASO_CASE_IDENTIFIER` that links all related clinical records (diagnoses, substance use, discharge, etc.).
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `ADM` | Must be exact | `ADM` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | See [Transaction Types](/getting-started/transaction-types) | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Must exist in CLIENT | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | Unique per treatment episode | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | Cannot be future | `2024-01-15` |
+| `ADMISSION_DATE` | Admission Date | `date` | YYYY-MM-DD | Cannot be future | `2024-01-15` |
+| `BHASO_IDENTIFIER` | BHASO ID | `x(10)` | Alphanumeric | Provider organization ID | `BHA-001` |
+| `SERVICE_IDENTIFIER` | Service Type | `x(3)` | See [Service Identifiers](/reference/appendix-a/service-identifiers) | Code value | `001` |
+| `REFERRAL_SOURCE` | Referral Source | `x(2)` | See [Referral Sources](/reference/appendix-a/referral-sources) | Code value | `01` |
+| `LEGAL_STATUS` | Legal Status | `x(2)` | See [Legal Status](/reference/appendix-a/legal-status) | Code value | `01` |
+| `LIVING_SITUATION` | Living Situation at Admission | `x(2)` | See [Living Situation](/reference/appendix-a/living-situation) | Code value | `01` |
+| `EMPLOYMENT_STATUS` | Employment Status | `x(2)` | See [Employment Status](/reference/appendix-a/employment-status) | Code value | `01` |
+
+### Conditional Fields
+
+| BHA Column Name | Field Name | Format | Condition | Constraints | Example |
+|-----------------|------------|--------|-----------|-------------|---------|
+| `PRIOR_EPISODE_DATE` | Prior Episode Date | `date` | Required if `PRIOR_TREATMENT` = `1` | YYYY-MM-DD | `2023-06-15` |
+| `COURT_CASE_NUMBER` | Court Case Number | `x(30)` | Required if `LEGAL_STATUS` in (`02`, `03`, `04`) | Text | `2024CV001234` |
+| `PREGNANT` | Pregnancy Status | `x(1)` | Required for females age 12-55 | `0`, `1`, `9` | `0` |
+| `NUM_DEPENDENTS` | Number of Dependents | `9(2)` | Required if `HAS_DEPENDENTS` = `1` | 1-99 | `2` |
+
+### Optional Fields
+
+| BHA Column Name | Field Name | Format | Default | Constraints | Example |
+|-----------------|------------|--------|---------|-------------|---------|
+| `PRIOR_TREATMENT` | Prior Treatment | `x(1)` | `0` | `0` or `1` | `1` |
+| `PRIOR_TREATMENT_BHASO` | Prior Treatment at Same BHASO | `x(1)` | `0` | `0` or `1` | `0` |
+| `ADMISSION_TYPE` | Admission Type | `x(2)` | `01` | Code value | `01` |
+| `TREATMENT_SETTING` | Treatment Setting | `x(2)` | NULL | Code value | `01` |
+| `CO_OCCURRING` | Co-occurring Disorder | `x(1)` | `0` | `0` or `1` | `1` |
+| `CRIMINAL_JUSTICE_REFERRAL` | CJ Referral | `x(1)` | `0` | `0` or `1` | `0` |
+| `HAS_DEPENDENTS` | Has Dependents | `x(1)` | `0` | `0` or `1` | `1` |
+| `SCHOOL_ATTENDANCE` | School Attendance | `x(2)` | NULL | For minors | `01` |
+| `EDUCATION_LEVEL` | Highest Education | `x(2)` | NULL | Code value | `12` |
+| `INSURANCE_TYPE` | Primary Insurance | `x(2)` | NULL | Code value | `01` |
+| `INCOME_SOURCE` | Income Source | `x(2)` | NULL | Code value | `01` |
+| `MARITAL_STATUS` | Marital Status | `x(1)` | NULL | Code value | `S` |
+| `MILITARY_STATUS` | Military Status | `x(2)` | NULL | Code value | `01` |
+| `ARREST_30_DAYS` | Arrests in 30 Days | `9(2)` | `0` | 0-99 | `0` |
+| `SELF_HELP_ATTENDANCE` | Self-Help Meetings | `9(2)` | NULL | 0-99 | `4` |
+| `NOTES` | Admission Notes | `x(500)` | NULL | Free text | `Referred by PCP` |
+
+<Snippet file="metadata-fields.mdx" />
+
+---
+
+## 2. Examples
+
+### Minimal Valid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ADMISSION_DATE,BHASO_IDENTIFIER,SERVICE_IDENTIFIER,REFERRAL_SOURCE,LEGAL_STATUS,LIVING_SITUATION,EMPLOYMENT_STATUS
+ADM,A,CLT-000001,CSE-000001,2024-01-15,2024-01-15,BHA-001,001,01,01,01,01
+```
+
+### Complete Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ADMISSION_DATE,BHASO_IDENTIFIER,SERVICE_IDENTIFIER,REFERRAL_SOURCE,LEGAL_STATUS,LIVING_SITUATION,EMPLOYMENT_STATUS,PRIOR_TREATMENT,PRIOR_TREATMENT_BHASO,PRIOR_EPISODE_DATE,ADMISSION_TYPE,TREATMENT_SETTING,CO_OCCURRING,CRIMINAL_JUSTICE_REFERRAL,COURT_CASE_NUMBER,PREGNANT,HAS_DEPENDENTS,NUM_DEPENDENTS,SCHOOL_ATTENDANCE,EDUCATION_LEVEL,INSURANCE_TYPE,INCOME_SOURCE,MARITAL_STATUS,MILITARY_STATUS,ARREST_30_DAYS,SELF_HELP_ATTENDANCE,NOTES
+ADM,A,CLT-000001,CSE-000001,2024-01-15,2024-01-15,BHA-001,001,01,01,01,03,1,0,2023-06-15,01,01,1,0,,0,1,2,,12,01,01,M,01,0,4,Referred by primary care physician for anxiety and depression
+ADM,A,CLT-000002,CSE-000002,2024-01-16,2024-01-16,BHA-001,002,07,03,02,06,0,,,,02,0,1,2024CV001234,9,0,,,10,02,03,S,99,1,0,Court-ordered treatment for substance use
+ADM,A,CLT-000003,CSE-000003,2024-01-17,2024-01-17,BHA-002,003,02,01,03,02,1,1,2024-01-01,01,03,1,0,,1,1,1,01,08,01,02,S,01,0,2,Adolescent residential admission
+```
+
+### Edge Cases
+
+```csv
+# Re-admission to same provider (prior treatment at same BHASO)
+ADM,A,CLT-000001,CSE-000004,2024-06-01,2024-06-01,BHA-001,001,01,01,01,03,1,1,2024-01-15,02,01,1,0,,0,1,2,,12,01,01,M,01,0,8,Re-admission after relapse
+
+# Criminal justice referral with court case
+ADM,A,CLT-000005,CSE-000005,2024-01-20,2024-01-20,BHA-003,004,07,04,05,06,0,,,01,02,0,1,2024CR005678,,0,,,08,99,99,S,99,3,0,Diverted from incarceration
+```
+
+### Invalid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ADMISSION_DATE,BHASO_IDENTIFIER,SERVICE_IDENTIFIER,REFERRAL_SOURCE,LEGAL_STATUS,LIVING_SITUATION,EMPLOYMENT_STATUS,PRIOR_TREATMENT,PRIOR_EPISODE_DATE,COURT_CASE_NUMBER
+ADM,A,CLT-999999,CSE-000006,2024-01-15,2024-01-15,BHA-001,001,01,01,01,01,0,,
+ADM,A,CLT-000001,CSE-000001,2024-01-15,2024-01-15,BHA-001,001,01,03,01,01,1,,
+```
+
+**Errors:**
+- Row 1: `REF-001` - Client not found: CLT-999999 (must submit CLIENT record first)
+- Row 2: `ROW-003` - Duplicate primary key (BHASO_CASE_IDENTIFIER + EFFECTIVE_DATE already exists)
+- Row 2: `XFD-001` - COURT_CASE_NUMBER required when LEGAL_STATUS = 03
+- Row 2: `XFD-001` - PRIOR_EPISODE_DATE required when PRIOR_TREATMENT = 1
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `ADM-001` | BHASO_CASE_IDENTIFIER is required | Provide unique case identifier |
+| `ADM-002` | ADMISSION_DATE must be valid date | Use YYYY-MM-DD format |
+| `ADM-003` | BHASO_IDENTIFIER is required | Provide valid BHASO provider ID |
+| `ADM-004` | SERVICE_IDENTIFIER is required | Provide valid service type code |
+| `ADM-005` | Client does not exist | Submit CLIENT record first |
+| `ADM-006` | ADMISSION_DATE cannot be before DOB | Check admission and birth dates |
+| `ADM-007` | ADMISSION_DATE cannot be future | Use date on or before today |
+| `ADM-008` | Duplicate BHASO_CASE_IDENTIFIER | Case ID must be unique per episode |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| Prior Treatment | `PRIOR_TREATMENT`, `PRIOR_EPISODE_DATE` | If `PRIOR_TREATMENT` = `1`, `PRIOR_EPISODE_DATE` required |
+| Legal Status | `LEGAL_STATUS`, `COURT_CASE_NUMBER` | If `LEGAL_STATUS` in (`02`, `03`, `04`), `COURT_CASE_NUMBER` required |
+| Dependents | `HAS_DEPENDENTS`, `NUM_DEPENDENTS` | If `HAS_DEPENDENTS` = `1`, `NUM_DEPENDENTS` required (1-99) |
+| Pregnancy | `SEX` (from CLIENT), age, `PREGNANT` | If female and age 12-55, `PREGNANT` required |
+| Date Order | `ADMISSION_DATE`, `PRIOR_EPISODE_DATE` | `PRIOR_EPISODE_DATE` must be before `ADMISSION_DATE` |
+
+---
+
+## 4. Template
+
+<Card title="Download ADMISSION Template" icon="download" href="/templates/admission_template.csv">
+  ADMISSION schema template with headers and sample row (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Escape | Doubled quotes (`""`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+
+---
+
+## 6. Update Semantics
+
+### Primary Key
+
+`BHASO_CASE_IDENTIFIER` + `EFFECTIVE_DATE`
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates new admission record |
+| Update | `U` | Creates new version with updated effective date |
+| Replace | `R` | Overwrites most recent admission record |
+
+### Idempotency
+
+- `BHASO_CASE_IDENTIFIER` links all records within a treatment episode
+- Once assigned, `BHASO_CASE_IDENTIFIER` cannot be changed
+- Updates create new versions; original records retained
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [CLIENT](/schemas/client) | Parent | `BHASO_CLIENT_IDENTIFIER` |
+| [DISCHARGE](/schemas/discharge) | Child | `BHASO_CASE_IDENTIFIER` |
+| [DIAGNOSIS](/schemas/diagnosis) | Child | `BHASO_CASE_IDENTIFIER` |
+| [SUBSTANCE USE](/schemas/substance-use-disorder) | Child | `BHASO_CASE_IDENTIFIER` |
+| [ACT](/schemas/act) | Child | `BHASO_CASE_IDENTIFIER` |
+| [ASCENT](/schemas/ascent) | Child | `BHASO_CASE_IDENTIFIER` |
+| [SC BABY](/schemas/sc-baby) | Child | `BHASO_CASE_IDENTIFIER` |
+| [SC PREGNANCY RISK](/schemas/sc-pregnancy-risk) | Child | `BHASO_CASE_IDENTIFIER` |

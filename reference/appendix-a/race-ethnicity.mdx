@@ -1,0 +1,87 @@
+---
+title: 'Race & Ethnicity Codes'
+description: 'Race and ethnicity classification codes'
+icon: 'users'
+---
+
+## Overview
+
+Race and ethnicity are captured in separate fields following federal reporting standards. Race is a multi-value field (clients may identify with multiple races), while ethnicity is a single value.
+
+## Race Codes
+
+The `RACE` field accepts multiple values separated by `; ` (semicolon and space).
+
+| Code | Description |
+|------|-------------|
+| `01` | Alaska Native |
+| `02` | American Indian |
+| `03` | Asian |
+| `04` | Black or African American |
+| `05` | Native Hawaiian or Other Pacific Islander |
+| `06` | White |
+| `07` | Some Other Race |
+| `97` | Don't Know |
+| `98` | Refused |
+| `99` | Not Collected |
+
+### Multi-Race Examples
+
+```csv
+# Single race
+RACE
+06
+
+# Multiple races (Black and White)
+RACE
+04; 06
+
+# Multiple races (American Indian, White, and Other)
+RACE
+02; 06; 07
+```
+
+## Ethnicity Codes
+
+The `ETHNICITY` field accepts a single value.
+
+| Code | Description |
+|------|-------------|
+| `1` | Hispanic or Latino |
+| `2` | Not Hispanic or Latino |
+| `7` | Don't Know |
+| `8` | Refused |
+| `9` | Not Collected |
+
+### Ethnicity Examples
+
+```csv
+# Hispanic
+ETHNICITY
+1
+
+# Not Hispanic
+ETHNICITY
+2
+```
+
+## Federal Reporting Alignment
+
+These codes align with:
+- OMB Statistical Policy Directive No. 15 (Race and Ethnicity Standards)
+- SAMHSA TEDS (Treatment Episode Data Set) requirements
+- CMS reporting standards
+
+## Usage Notes
+
+<Note>
+Race and ethnicity are separate concepts. A client who identifies as Hispanic or Latino may be of any race.
+</Note>
+
+### Best Practices
+
+1. **Ask about ethnicity first** - This allows respondents to self-identify as Hispanic/Latino before selecting race
+2. **Allow multiple race selections** - Do not force single-race selection
+3. **Use "Refused" appropriately** - When client explicitly declines to answer
+4. **Use "Don't Know" sparingly** - When client genuinely does not know
+5. **Avoid "Not Collected"** - Make every effort to collect this information

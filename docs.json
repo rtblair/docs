@@ -1,100 +1,96 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "CoBHRM Unified Data Model",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#003366",
+    "light": "#0066CC",
+    "dark": "#002244"
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "icon": "book-open-cover",
-          "href": "https://mintlify.com/docs"
-        },
-        {
-          "anchor": "Blog",
-          "icon": "newspaper",
-          "href": "https://mintlify.com/blog"
-        }
-      ]
-    },
     "anchors": [
       {
-        "anchor": "About this data model",
-        "tabs": [
+        "anchor": "Getting Started",
+        "icon": "house",
+        "groups": [
           {
-            "tab": "Guides",
-            "groups": [
-              {
-                "group": "Getting started",
-                "pages": [
-                  "index",
-                  "quickstart",
-                  "development"
-                ]
-              },
-              {
-                "group": "Customization",
-                "pages": [
-                  "essentials/settings",
-                  "essentials/navigation"
-                ]
-              },
-              {
-                "group": "Writing content",
-                "pages": [
-                  "essentials/markdown",
-                  "essentials/code",
-                  "essentials/images",
-                  "essentials/reusable-snippets"
-                ]
-              },
-              {
-                "group": "AI tools",
-                "pages": [
-                  "ai-tools/cursor",
-                  "ai-tools/claude-code",
-                  "ai-tools/windsurf"
-                ]
-              }
+            "group": "Overview",
+            "pages": [
+              "index",
+              "getting-started/data-model-overview",
+              "getting-started/file-format-requirements",
+              "getting-started/transaction-types"
             ]
           },
           {
-            "tab": "API reference",
-            "groups": [
-              {
-                "group": "API documentation",
-                "pages": [
-                  "api-reference/introduction"
-                ]
-              },
-              {
-                "group": "Endpoint examples",
-                "pages": [
-                  "api-reference/endpoint/get",
-                  "api-reference/endpoint/create",
-                  "api-reference/endpoint/delete",
-                  "api-reference/endpoint/webhook"
-                ]
-              }
+            "group": "Validation",
+            "pages": [
+              "getting-started/validation-rules"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "Data Import",
+        "icon": "database",
+        "groups": [
+          {
+            "group": "Core Schemas",
+            "pages": [
+              "schemas/client",
+              "schemas/admission",
+              "schemas/discharge"
             ]
           },
           {
-            "tab": "Client",
-            "icon": "person",
-            "menu": [
-              {
-                "item": "Test Item"
-              }
+            "group": "Clinical Data",
+            "pages": [
+              "schemas/diagnosis",
+              "schemas/substance-use-disorder"
             ]
           },
           {
-            "tab": "Admission"
+            "group": "Specialized Programs",
+            "pages": [
+              "schemas/act",
+              "schemas/ascent",
+              "schemas/sc-baby",
+              "schemas/sc-pregnancy-risk"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "Reference",
+        "icon": "book",
+        "groups": [
+          {
+            "group": "Appendix A - Code Tables",
+            "pages": [
+              "reference/appendix-a/overview",
+              "reference/appendix-a/counties",
+              "reference/appendix-a/race-ethnicity",
+              "reference/appendix-a/gender-codes",
+              "reference/appendix-a/service-identifiers",
+              "reference/appendix-a/referral-sources",
+              "reference/appendix-a/legal-status",
+              "reference/appendix-a/living-situation",
+              "reference/appendix-a/employment-status"
+            ]
+          },
+          {
+            "group": "Technical Reference",
+            "pages": [
+              "reference/cross-tab-dependencies",
+              "reference/conditional-requirements"
+            ]
+          },
+          {
+            "group": "Templates",
+            "pages": [
+              "reference/templates/downloads"
+            ]
           }
         ]
       }
@@ -108,32 +104,13 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@cobhrm.colorado.gov"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/colorado-behavioral-health"
     }
   }
 }

@@ -1,0 +1,213 @@
+---
+title: 'SC BABY Schema (BAB)'
+description: 'Special Connections - Baby outcomes data'
+icon: 'baby'
+---
+
+<Info>
+**Record Type:** `BAB` | **Version:** 2025 UDM | **Parent:** ADMISSION | **Program:** Special Connections
+</Info>
+
+## Overview
+
+The SC BABY schema captures birth and baby outcome data for the Special Connections (SC) program, which serves pregnant and postpartum women with substance use disorders. This record documents outcomes for babies born to program participants.
+
+<Note>
+This schema is **only required** for Special Connections program participants who give birth during enrollment. Submit one BAB record per baby born.
+</Note>
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `BAB` | Must be exact | `BAB` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Mother's ID | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | Must exist in ADMISSION | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | | `2024-06-15` |
+| `BABY_IDENTIFIER` | Baby Identifier | `x(20)` | Alphanumeric | Unique per baby | `BAB-000001` |
+| `BIRTH_DATE` | Birth Date | `date` | YYYY-MM-DD | | `2024-06-15` |
+| `GESTATIONAL_AGE` | Gestational Age (Weeks) | `9(2)` | 20-45 | Weeks at birth | `38` |
+| `BIRTH_WEIGHT` | Birth Weight (Grams) | `9(4)` | 300-7000 | In grams | `3200` |
+| `LIVE_BIRTH` | Live Birth | `x(1)` | `0` or `1` | | `1` |
+
+### Conditional Fields
+
+| BHA Column Name | Field Name | Format | Condition | Constraints | Example |
+|-----------------|------------|--------|-----------|-------------|---------|
+| `DEATH_DATE` | Death Date | `date` | Required if `LIVE_BIRTH` = `0` or neonatal death | YYYY-MM-DD | `2024-06-15` |
+| `APGAR_1MIN` | APGAR Score (1 min) | `9(2)` | Required if `LIVE_BIRTH` = `1` | 0-10 | `7` |
+| `APGAR_5MIN` | APGAR Score (5 min) | `9(2)` | Required if `LIVE_BIRTH` = `1` | 0-10 | `9` |
+| `NICU_ADMISSION` | NICU Admission | `x(1)` | Required if `LIVE_BIRTH` = `1` | `0` or `1` | `0` |
+| `NICU_DAYS` | NICU Days | `9(3)` | Required if `NICU_ADMISSION` = `1` | 1-365 | `5` |
+
+### Medical Outcome Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `NAS_DIAGNOSIS` | NAS Diagnosis | `x(1)` | `0` or `1` | Neonatal Abstinence Syndrome | `0` |
+| `NAS_TREATMENT` | NAS Treatment | `x(1)` | `0` or `1` | If NAS, treatment provided | `0` |
+| `NAS_TREATMENT_DAYS` | NAS Treatment Days | `9(3)` | 0-365 | Days of treatment | `0` |
+| `POSITIVE_TOX_SCREEN` | Positive Tox Screen | `x(1)` | `0`, `1`, `9` | At birth | `0` |
+| `TOX_SUBSTANCES` | Toxicology Substances | `x(100)` | Text | If positive | `` |
+| `CONGENITAL_ABNORMALITY` | Congenital Abnormality | `x(1)` | `0` or `1` | | `0` |
+| `ABNORMALITY_DESCRIPTION` | Abnormality Description | `x(200)` | Text | If abnormality | `` |
+
+### Custody and Discharge Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `HOSPITAL_DISCHARGE_DATE` | Hospital Discharge | `date` | YYYY-MM-DD | | `2024-06-18` |
+| `DISCHARGE_CUSTODY` | Discharge Custody | `x(2)` | Code value | See codes below | `01` |
+| `CPS_INVOLVEMENT` | CPS Involvement | `x(1)` | `0` or `1` | | `0` |
+| `CPS_CASE_NUMBER` | CPS Case Number | `x(30)` | Text | If CPS involved | `` |
+
+### Discharge Custody Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Mother |
+| `02` | Father |
+| `03` | Other family member |
+| `04` | Foster care |
+| `05` | Adoption |
+| `06` | Still hospitalized |
+| `99` | Unknown |
+
+### Optional Fields
+
+| BHA Column Name | Field Name | Format | Default | Constraints | Example |
+|-----------------|------------|--------|---------|-------------|---------|
+| `BABY_SEX` | Baby Sex | `x(1)` | NULL | `M`, `F`, `U` | `F` |
+| `MULTIPLE_BIRTH` | Multiple Birth | `x(1)` | `0` | `0` or `1` | `0` |
+| `BIRTH_ORDER` | Birth Order | `9(1)` | `1` | If multiple | `1` |
+| `DELIVERY_METHOD` | Delivery Method | `x(2)` | NULL | `01`=Vaginal, `02`=C-Section | `01` |
+| `PRENATAL_CARE` | Prenatal Care Received | `x(1)` | NULL | `0` or `1` | `1` |
+| `PRENATAL_VISITS` | Number of Prenatal Visits | `9(2)` | NULL | 0-50 | `12` |
+| `BREASTFEEDING` | Breastfeeding Initiated | `x(1)` | NULL | `0` or `1` | `1` |
+| `NOTES` | Clinical Notes | `x(500)` | NULL | Free text | `Healthy delivery` |
+
+---
+
+## 2. Examples
+
+### Minimal Valid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,BABY_IDENTIFIER,BIRTH_DATE,GESTATIONAL_AGE,BIRTH_WEIGHT,LIVE_BIRTH,APGAR_1MIN,APGAR_5MIN,NICU_ADMISSION
+BAB,A,CLT-000001,CSE-000001,2024-06-15,BAB-000001,2024-06-15,38,3200,1,7,9,0
+```
+
+### Complete Example - Healthy Birth
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,BABY_IDENTIFIER,BIRTH_DATE,GESTATIONAL_AGE,BIRTH_WEIGHT,LIVE_BIRTH,APGAR_1MIN,APGAR_5MIN,NICU_ADMISSION,NICU_DAYS,NAS_DIAGNOSIS,NAS_TREATMENT,NAS_TREATMENT_DAYS,POSITIVE_TOX_SCREEN,TOX_SUBSTANCES,CONGENITAL_ABNORMALITY,ABNORMALITY_DESCRIPTION,HOSPITAL_DISCHARGE_DATE,DISCHARGE_CUSTODY,CPS_INVOLVEMENT,CPS_CASE_NUMBER,BABY_SEX,MULTIPLE_BIRTH,BIRTH_ORDER,DELIVERY_METHOD,PRENATAL_CARE,PRENATAL_VISITS,BREASTFEEDING,NOTES
+BAB,A,CLT-000001,CSE-000001,2024-06-15,BAB-000001,2024-06-15,38,3200,1,7,9,0,,0,,,0,,,0,,2024-06-18,01,0,,F,0,1,01,1,12,1,Healthy full-term delivery. Mother successfully maintained sobriety throughout pregnancy. Baby discharged to mother.
+```
+
+### Example - NICU Admission with NAS
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,BABY_IDENTIFIER,BIRTH_DATE,GESTATIONAL_AGE,BIRTH_WEIGHT,LIVE_BIRTH,APGAR_1MIN,APGAR_5MIN,NICU_ADMISSION,NICU_DAYS,NAS_DIAGNOSIS,NAS_TREATMENT,NAS_TREATMENT_DAYS,POSITIVE_TOX_SCREEN,TOX_SUBSTANCES,CONGENITAL_ABNORMALITY,ABNORMALITY_DESCRIPTION,HOSPITAL_DISCHARGE_DATE,DISCHARGE_CUSTODY,CPS_INVOLVEMENT,CPS_CASE_NUMBER,BABY_SEX,MULTIPLE_BIRTH,BIRTH_ORDER,DELIVERY_METHOD,PRENATAL_CARE,PRENATAL_VISITS,BREASTFEEDING,NOTES
+BAB,A,CLT-000002,CSE-000002,2024-07-20,BAB-000002,2024-07-20,36,2800,1,6,8,1,14,1,1,10,1,Methadone,0,,2024-08-03,01,1,CPS-2024-12345,M,0,1,02,1,8,0,Preterm delivery. Baby experienced NAS symptoms requiring treatment. Mother on MAT. CPS notified per protocol - case closed with supportive services.
+```
+
+### Example - Multiple Birth (Twins)
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,BABY_IDENTIFIER,BIRTH_DATE,GESTATIONAL_AGE,BIRTH_WEIGHT,LIVE_BIRTH,APGAR_1MIN,APGAR_5MIN,NICU_ADMISSION,NICU_DAYS,NAS_DIAGNOSIS,NAS_TREATMENT,NAS_TREATMENT_DAYS,POSITIVE_TOX_SCREEN,CONGENITAL_ABNORMALITY,HOSPITAL_DISCHARGE_DATE,DISCHARGE_CUSTODY,CPS_INVOLVEMENT,BABY_SEX,MULTIPLE_BIRTH,BIRTH_ORDER,DELIVERY_METHOD,PRENATAL_CARE,PRENATAL_VISITS,NOTES
+BAB,A,CLT-000003,CSE-000003,2024-08-10,BAB-000003,2024-08-10,35,2400,1,7,8,1,7,0,,,0,0,2024-08-17,01,0,F,1,1,02,1,10,Twin A - discharged to mother
+BAB,A,CLT-000003,CSE-000003,2024-08-10,BAB-000004,2024-08-10,35,2200,1,6,8,1,10,0,,,0,0,2024-08-20,01,0,M,1,2,02,1,10,Twin B - slightly longer NICU stay due to lower birth weight
+```
+
+### Invalid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,BABY_IDENTIFIER,BIRTH_DATE,GESTATIONAL_AGE,BIRTH_WEIGHT,LIVE_BIRTH,APGAR_1MIN,APGAR_5MIN,NICU_ADMISSION,NICU_DAYS
+BAB,A,CLT-000001,CSE-999999,2024-06-15,BAB-000005,2024-06-15,38,3200,1,7,9,0,
+BAB,A,CLT-000001,CSE-000001,2024-06-15,BAB-000006,2024-06-15,38,3200,1,,,0,
+BAB,A,CLT-000001,CSE-000001,2024-06-15,BAB-000007,2024-06-15,38,3200,1,7,9,1,
+```
+
+**Errors:**
+- Row 1: `REF-002` - Admission not found: CSE-999999
+- Row 2: `XFD-001` - APGAR_1MIN required when LIVE_BIRTH = 1
+- Row 2: `XFD-001` - APGAR_5MIN required when LIVE_BIRTH = 1
+- Row 3: `XFD-001` - NICU_DAYS required when NICU_ADMISSION = 1
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `BAB-001` | BABY_IDENTIFIER is required | Provide unique baby identifier |
+| `BAB-002` | BIRTH_DATE is required | Provide birth date |
+| `BAB-003` | GESTATIONAL_AGE must be 20-45 weeks | Check gestational age |
+| `BAB-004` | BIRTH_WEIGHT must be 300-7000 grams | Check birth weight |
+| `BAB-005` | Admission not found | Submit ADMISSION record first |
+| `BAB-006` | Duplicate BABY_IDENTIFIER | Each baby needs unique ID |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| APGAR Scores | `LIVE_BIRTH`, `APGAR_1MIN`, `APGAR_5MIN` | Required if live birth |
+| NICU Days | `NICU_ADMISSION`, `NICU_DAYS` | Required if NICU admission |
+| NAS Treatment | `NAS_DIAGNOSIS`, `NAS_TREATMENT` | Required if NAS diagnosed |
+| Multiple Birth | `MULTIPLE_BIRTH`, `BIRTH_ORDER` | Birth order required if multiple |
+| Death | `LIVE_BIRTH`, `DEATH_DATE` | Required if stillbirth |
+
+---
+
+## 4. Template
+
+<Card title="Download SC BABY Template" icon="download" href="/templates/sc_baby_template.csv">
+  SC BABY schema template with headers and sample row (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+
+---
+
+## 6. Update Semantics
+
+### Primary Key
+
+`BABY_IDENTIFIER`
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates new baby record |
+| Update | `U` | Updates existing baby record |
+| Replace | `R` | Overwrites baby record |
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [ADMISSION](/schemas/admission) | Parent | `BHASO_CASE_IDENTIFIER` |
+| [CLIENT](/schemas/client) | Grandparent (Mother) | `BHASO_CLIENT_IDENTIFIER` |
+| [SC PREGNANCY RISK](/schemas/sc-pregnancy-risk) | Sibling | `BHASO_CASE_IDENTIFIER` |

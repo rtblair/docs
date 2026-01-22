@@ -1,0 +1,167 @@
+---
+title: 'Transaction Types'
+description: 'Understanding Add, Update, and Replace operations'
+icon: 'arrows-rotate'
+---
+
+<Info>
+This page documents **Principle #6: Update Semantics** - what happens when you submit a second file or need to modify existing records.
+</Info>
+
+## Transaction Type Overview
+
+Every record in the CoBHRM system must specify a `TRANSACTION_TYPE` that indicates the intended operation:
+
+| Code | Name | Description |
+|------|------|-------------|
+| `A` | Add | Create a new record |
+| `U` | Update | Modify an existing record |
+| `R` | Replace | Overwrite the most recent record (for error corrections) |
+
+## Primary Keys
+
+Each schema uses a composite primary key to uniquely identify records. The primary key typically consists of:
+
+| Component | Description |
+|-----------|-------------|
+| `BHASO_CLIENT_IDENTIFIER` | Unique client identifier |
+| `BHASO_CASE_IDENTIFIER` | Unique treatment episode identifier (where applicable) |
+| `EFFECTIVE_DATE` | Date the record takes effect |
+
+<Note>
+The exact primary key varies by schema. Refer to each schema's documentation for the specific key fields.
+</Note>
+
+## Transaction Type Details
+
+### Add (A)
+
+Use `TRANSACTION_TYPE = 'A'` to create a new record.
+
+**Behavior:**
+- Creates a new record with the specified primary key
+- Fails if a record with the same primary key already exists
+- All required fields must be provided
+
+**Example Use Cases:**
+- New client enrollment
+- New treatment episode admission
+- Adding a diagnosis to an admission
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,...
+CLI,A,CLT-12345,2024-01-15,...
+```
+
+### Update (U)
+
+Use `TRANSACTION_TYPE = 'U'` to modify an existing record.
+
+**Behavior:**
+- Locates the existing record by primary key
+- Creates a new version with the updated values
+- Preserves the original record for historical purposes (SCD Type 2)
+- Fails if no matching record exists
+
+**Example Use Cases:**
+- Updating client demographics (address change, phone number)
+- Correcting a previous submission
+- Adding information discovered after initial submission
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,...
+CLI,U,CLT-12345,2024-02-01,...
+```
+
+<Warning>
+Updates create a new effective-dated record. They do not modify the original record in place. Use the `EFFECTIVE_DATE` to control when the updated information takes effect.
+</Warning>
+
+### Replace (R)
+
+Use `TRANSACTION_TYPE = 'R'` to completely overwrite the most recent record.
+
+**Behavior:**
+- Locates the most recent record for the entity
+- Completely replaces it with the new values
+- Used for error corrections where the original submission was incorrect
+- Fails if no matching record exists
+
+**Example Use Cases:**
+- Correcting a data entry error in the most recent submission
+- Fixing an invalid code value
+- Replacing a record submitted with incorrect identifiers
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,EFFECTIVE_DATE,...
+CLI,R,CLT-12345,2024-01-15,...
+```
+
+<Tip>
+Use Replace sparingly. It overwrites history. For legitimate changes over time (e.g., address changes), use Update with a new effective date instead.
+</Tip>
+
+## Slowly Changing Dimensions (SCD Type 2)
+
+The CoBHRM system uses **SCD Type 2** for maintaining historical records:
+
+- **All historical records are retained** - nothing is deleted
+- **Each record version is effective-dated** - determined by `EFFECTIVE_DATE`
+- **Current record** = record with the most recent `EFFECTIVE_DATE`
+- **Updates create new versions** rather than modifying in place
+
+### Example: Client Address Change
+
+```csv
+# Initial submission (January)
+CLI,A,CLT-12345,2024-01-15,Smith,Jane,123 Main St,...
+
+# Address update (March) - creates new version
+CLI,U,CLT-12345,2024-03-01,Smith,Jane,456 Oak Ave,...
+```
+
+After both submissions, the system contains:
+1. Record effective 2024-01-15 with address "123 Main St" (historical)
+2. Record effective 2024-03-01 with address "456 Oak Ave" (current)
+
+## Idempotency
+
+<Note>
+File submissions are **idempotent** for Add operations. Submitting the same Add record twice will fail on the second submission (duplicate key error), not create a duplicate record.
+</Note>
+
+## Transaction Type by Schema
+
+| Schema | Key Fields | Notes |
+|--------|------------|-------|
+| CLIENT (CLI) | `BHASO_CLIENT_IDENTIFIER` + `EFFECTIVE_DATE` | Client demographics versioned by effective date |
+| ADMISSION (ADM) | `BHASO_CASE_IDENTIFIER` + `EFFECTIVE_DATE` | Treatment episode versioned |
+| DISCHARGE (DIS) | `BHASO_CASE_IDENTIFIER` | One discharge per admission |
+| DIAGNOSIS (DXA/DXD) | `BHASO_CASE_IDENTIFIER` + `DIAGNOSIS_CODE` + `EFFECTIVE_DATE` | Multiple diagnoses per episode |
+| SUBSTANCE USE (SIA/SID) | `BHASO_CASE_IDENTIFIER` + `SUBSTANCE_CODE` + `EFFECTIVE_DATE` | Multiple substances per episode |
+
+## Error Handling
+
+| Error | Cause | Resolution |
+|-------|-------|------------|
+| Duplicate key on Add | Record already exists | Use Update or Replace |
+| Record not found on Update | No matching primary key | Verify identifiers; use Add if new |
+| Record not found on Replace | No matching record | Verify identifiers; use Add if new |
+| Invalid transaction type | Value not A, U, or R | Correct the transaction type value |
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Add for New Records" icon="plus">
+    Always use transaction type `A` when creating records for the first time
+  </Card>
+  <Card title="Use Update for Changes" icon="pen">
+    Use `U` with a new effective date for legitimate data changes over time
+  </Card>
+  <Card title="Reserve Replace for Corrections" icon="rotate">
+    Only use `R` to fix errors in the most recent submission
+  </Card>
+  <Card title="Include All Fields" icon="list-check">
+    All transaction types require all required fields, even Update and Replace
+  </Card>
+</CardGroup>

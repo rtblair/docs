@@ -1,0 +1,116 @@
+---
+title: 'Employment Status Codes'
+description: 'Employment and occupation codes'
+icon: 'briefcase'
+---
+
+## Overview
+
+The `EMPLOYMENT_STATUS` field captures the client's employment situation at admission and discharge. This is an important outcome measure and social determinant of health.
+
+## Employment Status Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Full-Time (≥35 hours/week) |
+| `02` | Part-Time (<35 hours/week) |
+| `03` | Unemployed - Looking for Work |
+| `04` | Unemployed - Not Looking for Work |
+| `05` | Unemployed - Disabled |
+| `06` | Retired |
+| `07` | Student - Full-Time |
+| `08` | Student - Part-Time |
+| `09` | Homemaker |
+| `10` | Military - Active Duty |
+| `11` | Military - Reserves/Guard |
+| `12` | Incarcerated |
+| `13` | In Residential Treatment |
+| `14` | Supported Employment |
+| `15` | Sheltered Workshop |
+| `16` | Volunteer |
+| `97` | Unknown |
+| `99` | Other |
+
+## Usage Example
+
+```csv
+EMPLOYMENT_STATUS
+01
+```
+
+## Employment Categories
+
+### Employed (01-02, 14-16)
+Engaged in productive work:
+- **Full-Time** - 35+ hours per week
+- **Part-Time** - Less than 35 hours per week
+- **Supported** - Employment with support services
+- **Sheltered** - Protected work environment
+- **Volunteer** - Unpaid productive activity
+
+### Unemployed (03-05)
+Not currently working:
+- **Looking** - Actively seeking employment
+- **Not Looking** - Not seeking (discouraged, other reasons)
+- **Disabled** - Unable to work due to disability
+
+### Not in Labor Force (06-09)
+Not seeking employment:
+- **Retired** - Left workforce due to age
+- **Student** - Enrolled in education
+- **Homemaker** - Managing household
+
+### Military (10-11)
+Active military service:
+- **Active Duty** - Full-time military
+- **Reserves** - Part-time military service
+
+### Institutional (12-13)
+Currently in an institution:
+- **Incarcerated** - In jail or prison
+- **Residential** - In treatment facility
+
+## Employment as Outcome
+
+Compare `EMPLOYMENT_STATUS` between admission and discharge to measure employment outcomes:
+
+```csv
+# Admission - Unemployed
+RECORD_TYPE,EMPLOYMENT_STATUS
+ADM,03
+
+# Discharge - Part-time employed
+RECORD_TYPE,EMPLOYMENT_STATUS
+DIS,02
+```
+
+### Positive Outcome Categories
+
+Transitions to any of these codes typically represent improved functioning:
+- `01` Full-Time
+- `02` Part-Time
+- `06` Retired (age-appropriate)
+- `07`, `08` Student
+- `14` Supported Employment
+
+<Tip>
+For clients with disabilities, `14` (Supported Employment) or `15` (Sheltered Workshop) may represent excellent outcomes.
+</Tip>
+
+## Age-Appropriate Considerations
+
+| Age Group | Expected Codes |
+|-----------|---------------|
+| Under 16 | 07, 08 (Student), 99 (Other) |
+| 16-18 | 01, 02, 07, 08 |
+| 18-65 | 01-05, 07-09, 14-16 |
+| 65+ | 01, 02, 06 (Retired) |
+
+## Cross-Validation
+
+| If `EMPLOYMENT_STATUS` | Then Check |
+|------------------------|------------|
+| `07` or `08` (Student) | Age is school-appropriate |
+| `06` (Retired) | Age typically 55+ |
+| `10` or `11` (Military) | `VETERAN_STATUS` = `0` (active) |
+| `12` (Incarcerated) | `LEGAL_STATUS` = `11` or `12` |

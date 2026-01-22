@@ -1,0 +1,257 @@
+---
+title: 'SC PREGNANCY RISK Schema (PRS)'
+description: 'Special Connections - Pregnancy and postpartum risk assessment'
+icon: 'heart-pulse'
+---
+
+<Info>
+**Record Type:** `PRS` | **Version:** 2025 UDM | **Parent:** ADMISSION | **Program:** Special Connections
+</Info>
+
+## Overview
+
+The SC PREGNANCY RISK schema captures risk assessment and monitoring data for pregnant and postpartum women in the Special Connections (SC) program. This record documents risk factors, prenatal care, and maternal health indicators throughout the program.
+
+<Note>
+This schema is **only required** for Special Connections program participants. Submit PRS records at intake and periodically throughout enrollment to track risk changes.
+</Note>
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `PRS` | Must be exact | `PRS` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Must match admission | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | Must exist in ADMISSION | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | | `2024-01-15` |
+| `ASSESSMENT_DATE` | Assessment Date | `date` | YYYY-MM-DD | | `2024-01-15` |
+| `ASSESSMENT_TYPE` | Assessment Type | `x(1)` | `I`, `P`, `D` | See codes below | `I` |
+| `PREGNANCY_STATUS` | Pregnancy Status | `x(1)` | `1`, `2`, `3` | See codes below | `1` |
+
+### Assessment Type Codes
+
+| Code | Description |
+|------|-------------|
+| `I` | Initial (Intake) Assessment |
+| `P` | Periodic (Follow-up) Assessment |
+| `D` | Discharge Assessment |
+
+### Pregnancy Status Codes
+
+| Code | Description |
+|------|-------------|
+| `1` | Currently pregnant |
+| `2` | Postpartum (≤12 months since delivery) |
+| `3` | Pregnancy loss |
+
+### Pregnancy Information (Required if Pregnant)
+
+| BHA Column Name | Field Name | Format | Condition | Constraints | Example |
+|-----------------|------------|--------|-----------|-------------|---------|
+| `ESTIMATED_DUE_DATE` | Estimated Due Date | `date` | If `PREGNANCY_STATUS` = `1` | YYYY-MM-DD | `2024-07-15` |
+| `GESTATIONAL_AGE` | Current Gestational Age | `9(2)` | If `PREGNANCY_STATUS` = `1` | Weeks (4-42) | `20` |
+| `GRAVIDA` | Total Pregnancies | `9(2)` | Required | Including current | `3` |
+| `PARA` | Live Births | `9(2)` | Required | Prior live births | `1` |
+
+### Risk Factor Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `HIGH_RISK_PREGNANCY` | High Risk Pregnancy | `x(1)` | `0` or `1` | | `1` |
+| `HIGH_RISK_FACTORS` | Risk Factor Codes | `x(50)` | Multi-value | `;` delimited | `01; 03; 05` |
+| `SUBSTANCE_USE_PREGNANCY` | Substance Use During Pregnancy | `x(1)` | `0`, `1`, `9` | | `1` |
+| `TOBACCO_USE` | Tobacco Use | `x(1)` | `0` or `1` | | `1` |
+| `HIV_STATUS` | HIV Status | `x(1)` | `0`, `1`, `9` | 9=Unknown | `0` |
+| `HEPATITIS_C` | Hepatitis C Status | `x(1)` | `0`, `1`, `9` | 9=Unknown | `0` |
+| `STI_CURRENT` | Current STI | `x(1)` | `0`, `1`, `9` | | `0` |
+| `DOMESTIC_VIOLENCE` | Domestic Violence Risk | `x(1)` | `0`, `1`, `9` | | `0` |
+| `HOUSING_INSTABILITY` | Housing Instability | `x(1)` | `0` or `1` | | `0` |
+| `FOOD_INSECURITY` | Food Insecurity | `x(1)` | `0` or `1` | | `0` |
+
+### High Risk Factor Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Advanced maternal age (≥35) |
+| `02` | Teen pregnancy (<18) |
+| `03` | Prior preterm birth |
+| `04` | Prior pregnancy loss |
+| `05` | Multiple gestation |
+| `06` | Gestational diabetes |
+| `07` | Preeclampsia/Hypertension |
+| `08` | Placental abnormality |
+| `09` | Fetal abnormality |
+| `10` | Chronic health condition |
+| `11` | History of C-section |
+| `12` | Substance use disorder |
+| `99` | Other |
+
+### Prenatal Care Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `PRENATAL_CARE` | Receiving Prenatal Care | `x(1)` | `0` or `1` | | `1` |
+| `PRENATAL_CARE_TRIMESTER` | Care Started | `x(1)` | `1`, `2`, `3` | Trimester began | `1` |
+| `PRENATAL_VISITS` | Total Prenatal Visits | `9(2)` | 0-50 | To date | `8` |
+| `OB_PROVIDER` | Has OB Provider | `x(1)` | `0` or `1` | | `1` |
+| `LAST_PRENATAL_VISIT` | Last Prenatal Visit | `date` | YYYY-MM-DD | | `2024-01-10` |
+
+### MAT/Treatment Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `MAT_CURRENT` | Currently on MAT | `x(1)` | `0` or `1` | | `1` |
+| `MAT_MEDICATION` | MAT Medication | `x(3)` | Code value | See below | `001` |
+| `MAT_DOSE` | MAT Dose (mg) | `9(3).9(1)` | 0-999.9 | | `16.0` |
+| `MAT_PROVIDER` | MAT Provider | `x(100)` | Text | Provider name | `Metro OTP` |
+| `TREATMENT_ENGAGEMENT` | Treatment Engagement | `x(1)` | `1`-`5` | 1=Poor, 5=Excellent | `4` |
+
+### MAT Medication Codes
+
+| Code | Description |
+|------|-------------|
+| `001` | Buprenorphine (Subutex) |
+| `002` | Buprenorphine/Naloxone (Suboxone) |
+| `003` | Methadone |
+| `004` | Naltrexone (Vivitrol) |
+| `099` | Other |
+
+### Optional Fields
+
+| BHA Column Name | Field Name | Format | Default | Constraints | Example |
+|-----------------|------------|--------|---------|-------------|---------|
+| `DELIVERY_DATE` | Delivery Date | `date` | NULL | If delivered | `2024-07-10` |
+| `DELIVERY_OUTCOME` | Delivery Outcome | `x(2)` | NULL | Code value | `01` |
+| `MENTAL_HEALTH_SCREEN` | MH Screen Score | `9(3)` | NULL | PHQ-9 or similar | `12` |
+| `SUPPORT_SYSTEM` | Support System | `x(1)` | NULL | `1`-`5` scale | `3` |
+| `PARENTING_CHILDREN` | Children in Care | `9(2)` | `0` | Current custody | `1` |
+| `CPS_HISTORY` | CPS History | `x(1)` | `0` | `0` or `1` | `0` |
+| `NOTES` | Assessment Notes | `x(500)` | NULL | Free text | `` |
+
+---
+
+## 2. Examples
+
+### Minimal Valid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ASSESSMENT_DATE,ASSESSMENT_TYPE,PREGNANCY_STATUS,ESTIMATED_DUE_DATE,GESTATIONAL_AGE,GRAVIDA,PARA
+PRS,A,CLT-000001,CSE-000001,2024-01-15,2024-01-15,I,1,2024-07-15,20,3,1
+```
+
+### Complete Intake Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ASSESSMENT_DATE,ASSESSMENT_TYPE,PREGNANCY_STATUS,ESTIMATED_DUE_DATE,GESTATIONAL_AGE,GRAVIDA,PARA,HIGH_RISK_PREGNANCY,HIGH_RISK_FACTORS,SUBSTANCE_USE_PREGNANCY,TOBACCO_USE,HIV_STATUS,HEPATITIS_C,STI_CURRENT,DOMESTIC_VIOLENCE,HOUSING_INSTABILITY,FOOD_INSECURITY,PRENATAL_CARE,PRENATAL_CARE_TRIMESTER,PRENATAL_VISITS,OB_PROVIDER,LAST_PRENATAL_VISIT,MAT_CURRENT,MAT_MEDICATION,MAT_DOSE,MAT_PROVIDER,TREATMENT_ENGAGEMENT,MENTAL_HEALTH_SCREEN,SUPPORT_SYSTEM,PARENTING_CHILDREN,CPS_HISTORY,NOTES
+PRS,A,CLT-000001,CSE-000001,2024-01-15,2024-01-15,I,1,2024-07-15,20,3,1,1,01; 12,1,1,0,1,0,0,1,0,1,2,4,1,2024-01-10,1,001,16.0,Metro OTP,3,15,2,1,1,Initial SC intake. Client is 20 weeks pregnant with history of OUD. Currently on Subutex 16mg. Engaged in prenatal care. Living with partner who is supportive.
+```
+
+### Follow-up Assessment Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ASSESSMENT_DATE,ASSESSMENT_TYPE,PREGNANCY_STATUS,ESTIMATED_DUE_DATE,GESTATIONAL_AGE,GRAVIDA,PARA,HIGH_RISK_PREGNANCY,HIGH_RISK_FACTORS,SUBSTANCE_USE_PREGNANCY,TOBACCO_USE,HIV_STATUS,HEPATITIS_C,STI_CURRENT,DOMESTIC_VIOLENCE,HOUSING_INSTABILITY,FOOD_INSECURITY,PRENATAL_CARE,PRENATAL_CARE_TRIMESTER,PRENATAL_VISITS,OB_PROVIDER,LAST_PRENATAL_VISIT,MAT_CURRENT,MAT_MEDICATION,MAT_DOSE,MAT_PROVIDER,TREATMENT_ENGAGEMENT,MENTAL_HEALTH_SCREEN,SUPPORT_SYSTEM,PARENTING_CHILDREN,CPS_HISTORY,NOTES
+PRS,A,CLT-000001,CSE-000001,2024-04-15,2024-04-15,P,1,2024-07-15,32,3,1,1,01; 12,0,0,0,1,0,0,0,0,1,2,10,1,2024-04-12,1,001,16.0,Metro OTP,4,8,3,1,1,32-week follow-up. Client has remained abstinent from illicit substances. Quit smoking at 24 weeks. PHQ-9 improved from 15 to 8. Good prenatal care attendance.
+```
+
+### Postpartum Assessment Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ASSESSMENT_DATE,ASSESSMENT_TYPE,PREGNANCY_STATUS,GRAVIDA,PARA,HIGH_RISK_PREGNANCY,SUBSTANCE_USE_PREGNANCY,TOBACCO_USE,HIV_STATUS,HEPATITIS_C,DOMESTIC_VIOLENCE,HOUSING_INSTABILITY,FOOD_INSECURITY,MAT_CURRENT,MAT_MEDICATION,MAT_DOSE,MAT_PROVIDER,TREATMENT_ENGAGEMENT,DELIVERY_DATE,DELIVERY_OUTCOME,MENTAL_HEALTH_SCREEN,SUPPORT_SYSTEM,PARENTING_CHILDREN,CPS_HISTORY,NOTES
+PRS,A,CLT-000001,CSE-000001,2024-08-15,2024-08-15,P,2,3,2,0,0,0,0,1,0,0,0,1,001,12.0,Metro OTP,4,2024-07-10,01,10,4,2,0,Postpartum follow-up. Healthy delivery at 39 weeks. Baby discharged to mother. Client continuing MAT with reduced dose. Some increased anxiety but managing well. Edinburgh score 10 - monitoring for postpartum depression.
+```
+
+### Invalid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,ASSESSMENT_DATE,ASSESSMENT_TYPE,PREGNANCY_STATUS,ESTIMATED_DUE_DATE,GESTATIONAL_AGE,GRAVIDA,PARA
+PRS,A,CLT-000001,CSE-999999,2024-01-15,2024-01-15,I,1,2024-07-15,20,3,1
+PRS,A,CLT-000001,CSE-000001,2024-01-15,2024-01-15,I,1,,,3,1
+```
+
+**Errors:**
+- Row 1: `REF-002` - Admission not found: CSE-999999
+- Row 2: `XFD-001` - ESTIMATED_DUE_DATE required when PREGNANCY_STATUS = 1
+- Row 2: `XFD-001` - GESTATIONAL_AGE required when PREGNANCY_STATUS = 1
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `PRS-001` | ASSESSMENT_DATE is required | Provide assessment date |
+| `PRS-002` | PREGNANCY_STATUS is required | Provide status (1, 2, or 3) |
+| `PRS-003` | Invalid ASSESSMENT_TYPE | Use I, P, or D |
+| `PRS-004` | Admission not found | Submit ADMISSION record first |
+| `PRS-005` | GRAVIDA must be ≥ PARA | Check pregnancy history |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| Pregnant Fields | `PREGNANCY_STATUS`, `ESTIMATED_DUE_DATE`, `GESTATIONAL_AGE` | Required if pregnant |
+| MAT Details | `MAT_CURRENT`, `MAT_MEDICATION`, `MAT_DOSE` | If on MAT, medication and dose recommended |
+| Risk Factors | `HIGH_RISK_PREGNANCY`, `HIGH_RISK_FACTORS` | If high risk, factors required |
+| Prenatal Care | `PRENATAL_CARE`, `PRENATAL_VISITS` | If care, visits should be tracked |
+
+---
+
+## 4. Template
+
+<Card title="Download SC PREGNANCY RISK Template" icon="download" href="/templates/sc_pregnancy_risk_template.csv">
+  SC PREGNANCY RISK schema template with headers and sample row (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+| Multi-value Delimiter | Semicolon + space (`; `) for HIGH_RISK_FACTORS |
+
+---
+
+## 6. Update Semantics
+
+### Primary Key
+
+`BHASO_CASE_IDENTIFIER` + `ASSESSMENT_DATE` + `ASSESSMENT_TYPE`
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates new assessment record |
+| Update | `U` | Updates existing assessment |
+| Replace | `R` | Overwrites assessment record |
+
+### Assessment Frequency
+
+- **Intake (I)**: One per admission
+- **Periodic (P)**: Monthly or as clinically indicated
+- **Discharge (D)**: One at program completion
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [ADMISSION](/schemas/admission) | Parent | `BHASO_CASE_IDENTIFIER` |
+| [CLIENT](/schemas/client) | Grandparent | `BHASO_CLIENT_IDENTIFIER` |
+| [SC BABY](/schemas/sc-baby) | Sibling | `BHASO_CASE_IDENTIFIER` |

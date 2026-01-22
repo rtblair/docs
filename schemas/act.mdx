@@ -1,0 +1,178 @@
+---
+title: 'ACT Schema'
+description: 'Assertive Community Treatment program data'
+icon: 'people-group'
+---
+
+<Info>
+**Record Type:** `ACT` | **Version:** 2025 UDM | **Parent:** ADMISSION | **Program:** Assertive Community Treatment
+</Info>
+
+## Overview
+
+The ACT (Assertive Community Treatment) schema captures data for intensive community-based mental health treatment programs. ACT teams provide comprehensive services to individuals with severe mental illness who require intensive support to live successfully in the community.
+
+<Note>
+This schema is **only required** for clients enrolled in ACT programs. Submit ACT records for each reporting period during enrollment.
+</Note>
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `ACT` | Must be exact | `ACT` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | See [Transaction Types](/getting-started/transaction-types) | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Must match admission | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | Must exist in ADMISSION | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | Cannot be future | `2024-01-31` |
+| `REPORTING_PERIOD_START` | Period Start | `date` | YYYY-MM-DD | First day of month | `2024-01-01` |
+| `REPORTING_PERIOD_END` | Period End | `date` | YYYY-MM-DD | Last day of month | `2024-01-31` |
+| `ACT_TEAM_ID` | ACT Team ID | `x(10)` | Alphanumeric | Valid team identifier | `ACT-001` |
+| `ENROLLMENT_STATUS` | Enrollment Status | `x(1)` | `1`, `2`, `3` | See codes below | `1` |
+
+### Enrollment Status Codes
+
+| Code | Description |
+|------|-------------|
+| `1` | Active - Full ACT services |
+| `2` | Step-down - Transitioning to lower intensity |
+| `3` | Graduated - Successfully transitioned out |
+
+### Service Delivery Fields (Required)
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `FACE_TO_FACE_CONTACTS` | Face-to-Face Contacts | `9(3)` | 0-999 | Monthly total | `12` |
+| `PHONE_CONTACTS` | Phone Contacts | `9(3)` | 0-999 | Monthly total | `8` |
+| `COMMUNITY_CONTACTS` | Community Contacts | `9(3)` | 0-999 | In community (not office) | `10` |
+| `CRISIS_CONTACTS` | Crisis Contacts | `9(3)` | 0-999 | Emergency/crisis | `2` |
+
+### Outcome Fields (Required)
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `PSYCHIATRIC_HOSPITALIZATION` | Psych Hospitalization | `x(1)` | `0` or `1` | During period | `0` |
+| `HOSPITALIZATION_DAYS` | Hospital Days | `9(3)` | 0-31 | If hospitalized | `0` |
+| `ER_VISITS` | ER Visits | `9(2)` | 0-99 | Psychiatric ER visits | `0` |
+| `JAIL_DAYS` | Jail/Prison Days | `9(3)` | 0-31 | During period | `0` |
+| `HOMELESS_DAYS` | Homeless Days | `9(3)` | 0-31 | During period | `0` |
+
+### Optional Fields
+
+| BHA Column Name | Field Name | Format | Default | Constraints | Example |
+|-----------------|------------|--------|---------|-------------|---------|
+| `HOUSING_STATUS` | Housing Status | `x(2)` | NULL | Code value | `01` |
+| `EMPLOYMENT_STATUS` | Employment Status | `x(2)` | NULL | Code value | `03` |
+| `EDUCATION_ENROLLED` | Education Enrolled | `x(1)` | `0` | `0` or `1` | `0` |
+| `SUBSTANCE_USE_STATUS` | Substance Use Status | `x(1)` | NULL | `0`, `1`, `2` | `1` |
+| `MEDICATION_ADHERENCE` | Med Adherence | `x(1)` | NULL | `1`-`5` scale | `4` |
+| `FAMILY_CONTACTS` | Family Contacts | `9(2)` | `0` | Monthly | `3` |
+| `GROUPS_ATTENDED` | Groups Attended | `9(2)` | `0` | Monthly | `4` |
+| `PEER_SUPPORT_CONTACTS` | Peer Support | `9(2)` | `0` | Monthly | `2` |
+| `NOTES` | Progress Notes | `x(500)` | NULL | Free text | `Stable month` |
+
+---
+
+## 2. Examples
+
+### Minimal Valid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,REPORTING_PERIOD_START,REPORTING_PERIOD_END,ACT_TEAM_ID,ENROLLMENT_STATUS,FACE_TO_FACE_CONTACTS,PHONE_CONTACTS,COMMUNITY_CONTACTS,CRISIS_CONTACTS,PSYCHIATRIC_HOSPITALIZATION,HOSPITALIZATION_DAYS,ER_VISITS,JAIL_DAYS,HOMELESS_DAYS
+ACT,A,CLT-000001,CSE-000001,2024-01-31,2024-01-01,2024-01-31,ACT-001,1,12,8,10,2,0,0,0,0,0
+```
+
+### Complete Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,REPORTING_PERIOD_START,REPORTING_PERIOD_END,ACT_TEAM_ID,ENROLLMENT_STATUS,FACE_TO_FACE_CONTACTS,PHONE_CONTACTS,COMMUNITY_CONTACTS,CRISIS_CONTACTS,PSYCHIATRIC_HOSPITALIZATION,HOSPITALIZATION_DAYS,ER_VISITS,JAIL_DAYS,HOMELESS_DAYS,HOUSING_STATUS,EMPLOYMENT_STATUS,EDUCATION_ENROLLED,SUBSTANCE_USE_STATUS,MEDICATION_ADHERENCE,FAMILY_CONTACTS,GROUPS_ATTENDED,PEER_SUPPORT_CONTACTS,NOTES
+ACT,A,CLT-000001,CSE-000001,2024-01-31,2024-01-01,2024-01-31,ACT-001,1,15,10,12,1,0,0,0,0,0,01,03,0,1,4,3,4,2,Stable month. Client maintaining housing and attending all scheduled appointments.
+ACT,A,CLT-000001,CSE-000001,2024-02-29,2024-02-01,2024-02-29,ACT-001,1,14,8,11,3,1,5,1,0,0,01,03,0,2,3,2,4,2,Brief hospitalization due to medication non-compliance. Stabilized and discharged.
+ACT,A,CLT-000001,CSE-000001,2024-03-31,2024-03-01,2024-03-31,ACT-001,2,10,6,8,0,0,0,0,0,0,01,02,0,1,5,4,4,3,Transitioning to step-down. Increased independent functioning.
+```
+
+### Invalid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,REPORTING_PERIOD_START,REPORTING_PERIOD_END,ACT_TEAM_ID,ENROLLMENT_STATUS,FACE_TO_FACE_CONTACTS,PHONE_CONTACTS,COMMUNITY_CONTACTS,CRISIS_CONTACTS,PSYCHIATRIC_HOSPITALIZATION,HOSPITALIZATION_DAYS,ER_VISITS,JAIL_DAYS,HOMELESS_DAYS
+ACT,A,CLT-000001,CSE-000001,2024-01-31,2024-01-15,2024-01-31,ACT-001,1,12,8,10,2,0,0,0,0,0
+ACT,A,CLT-000001,CSE-000001,2024-01-31,2024-01-01,2024-01-31,ACT-001,1,12,8,10,2,1,0,0,0,0
+```
+
+**Errors:**
+- Row 1: `ACT-003` - REPORTING_PERIOD_START must be first day of month
+- Row 2: `XFD-001` - HOSPITALIZATION_DAYS required when PSYCHIATRIC_HOSPITALIZATION = 1
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `ACT-001` | ACT_TEAM_ID is required | Provide valid ACT team identifier |
+| `ACT-002` | ENROLLMENT_STATUS is required | Provide status code 1, 2, or 3 |
+| `ACT-003` | REPORTING_PERIOD_START must be first day of month | Use first day of reporting month |
+| `ACT-004` | REPORTING_PERIOD_END must be last day of month | Use last day of reporting month |
+| `ACT-005` | Admission not found | Submit ADMISSION record first |
+| `ACT-006` | Duplicate reporting period | Only one ACT record per month |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| Hospitalization | `PSYCHIATRIC_HOSPITALIZATION`, `HOSPITALIZATION_DAYS` | If hospitalized, days required (>0) |
+| Period Dates | `REPORTING_PERIOD_START`, `REPORTING_PERIOD_END` | Must be same calendar month |
+| Contact Totals | `COMMUNITY_CONTACTS`, `FACE_TO_FACE_CONTACTS` | Community ≤ Face-to-face |
+
+---
+
+## 4. Template
+
+<Card title="Download ACT Template" icon="download" href="/templates/act_template.csv">
+  ACT schema template with headers and sample row (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+
+---
+
+## 6. Update Semantics
+
+### Primary Key
+
+`BHASO_CASE_IDENTIFIER` + `REPORTING_PERIOD_START`
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates new monthly ACT record |
+| Update | `U` | Updates existing period record |
+| Replace | `R` | Overwrites period record |
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [ADMISSION](/schemas/admission) | Parent | `BHASO_CASE_IDENTIFIER` |
+| [CLIENT](/schemas/client) | Grandparent | `BHASO_CLIENT_IDENTIFIER` |

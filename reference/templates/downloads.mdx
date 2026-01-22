@@ -1,0 +1,161 @@
+---
+title: 'Template Downloads'
+description: 'Downloadable CSV templates for all schemas'
+icon: 'download'
+---
+
+<Info>
+**Principle #4: Official Templates** - Download starter files with headers and sample rows for each schema.
+</Info>
+
+## About Templates
+
+Each template includes:
+- **Header row** with all field names in the correct order
+- **Sample row** with realistic example data
+- **Comments** explaining required vs. optional fields
+
+## Core Schema Templates
+
+<CardGroup cols={1}>
+  <Card title="CLIENT Template" icon="user" href="/templates/client_template.csv">
+    Client demographics and identifiers (CLI)
+
+    **Fields:** 28 | **Required:** 11
+  </Card>
+  <Card title="ADMISSION Template" icon="door-open" href="/templates/admission_template.csv">
+    Treatment episode admission records (ADM)
+
+    **Fields:** 35 | **Required:** 12
+  </Card>
+  <Card title="DISCHARGE Template" icon="door-closed" href="/templates/discharge_template.csv">
+    Treatment episode discharge records (DIS)
+
+    **Fields:** 22 | **Required:** 10
+  </Card>
+</CardGroup>
+
+## Clinical Data Templates
+
+<CardGroup cols={1}>
+  <Card title="DIAGNOSIS Template" icon="stethoscope" href="/templates/diagnosis_template.csv">
+    Clinical diagnoses at admission and discharge (DXA/DXD)
+
+    **Fields:** 14 | **Required:** 8
+  </Card>
+  <Card title="SUBSTANCE USE Template" icon="flask-vial" href="/templates/substance_use_template.csv">
+    Substance use information at admission and discharge (SIA/SID)
+
+    **Fields:** 20 | **Required:** 10
+  </Card>
+</CardGroup>
+
+## Specialized Program Templates
+
+<CardGroup cols={1}>
+  <Card title="ACT Template" icon="people-group" href="/templates/act_template.csv">
+    Assertive Community Treatment monthly data (ACT)
+
+    **Fields:** 26 | **Required:** 14
+  </Card>
+  <Card title="ASCENT Template" icon="child" href="/templates/ascent_template.csv">
+    Youth residential treatment data (ASA/ASQ/ASD)
+
+    **Fields:** 30 | **Required:** varies by record type
+  </Card>
+  <Card title="SC BABY Template" icon="baby" href="/templates/sc_baby_template.csv">
+    Special Connections baby outcomes (BAB)
+
+    **Fields:** 28 | **Required:** 10
+  </Card>
+  <Card title="SC PREGNANCY RISK Template" icon="heart-pulse" href="/templates/sc_pregnancy_risk_template.csv">
+    Special Connections pregnancy risk assessment (PRS)
+
+    **Fields:** 35 | **Required:** 8
+  </Card>
+</CardGroup>
+
+## Download All Templates
+
+<Card title="All Templates (ZIP)" icon="file-zipper" href="/templates/cobhrm_templates_2025.zip">
+  Complete package with all 9 schema templates and Appendix A code tables
+</Card>
+
+## Template Usage Guide
+
+### Step 1: Download the Template
+
+Download the template for the schema you need to submit.
+
+### Step 2: Review Field Requirements
+
+Each template includes a reference row with:
+- `R` = Required field
+- `C` = Conditionally required field
+- `O` = Optional field
+
+### Step 3: Prepare Your Data
+
+1. Delete the sample row (keep only header row)
+2. Map your data to the template columns
+3. Ensure all required fields have values
+4. Check conditional requirements
+
+### Step 4: Validate Format
+
+Before submitting:
+- [ ] File is saved as UTF-8 CSV
+- [ ] All required fields have values
+- [ ] Date fields are in YYYY-MM-DD format
+- [ ] Code values match Appendix A
+
+## Template Format
+
+All templates follow this format:
+
+```csv
+# Row 1: Column headers
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,...
+
+# Row 2 (optional): Field requirements (R=Required, C=Conditional, O=Optional)
+R,R,R,...
+
+# Row 3: Sample data
+CLI,A,CLT-000001,...
+```
+
+<Warning>
+Delete rows 2 and 3 before submitting your data. Only the header row and your data rows should be in the final file.
+</Warning>
+
+## Version Information
+
+| Template Version | Effective Date | Changes |
+|-----------------|----------------|---------|
+| 2025 v1.0 | 2025-01-01 | Current version |
+
+<Note>
+Templates are updated when the data model changes. Always download the latest version before preparing submissions.
+</Note>
+
+## Troubleshooting
+
+### Common Template Issues
+
+| Issue | Solution |
+|-------|----------|
+| Column mismatch error | Use the official template - don't rename or reorder columns |
+| Encoding error | Save as UTF-8, not UTF-16 or ANSI |
+| Extra columns | Remove any columns not in the template |
+| Missing header row | First row must be the column headers |
+
+### Excel Users
+
+When saving from Excel:
+1. Go to File → Save As
+2. Choose "CSV UTF-8 (Comma delimited)" format
+3. If this option isn't available, use "CSV (Comma delimited)" and check encoding
+
+<Tip>
+Consider using a text editor or scripting language for large files. Excel may modify data unexpectedly (e.g., removing leading zeros, changing date formats).
+</Tip>

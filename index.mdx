@@ -1,97 +1,93 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: 'CoBHRM Unified Data Model'
+description: 'Official data import specification for the Colorado Behavioral Health Resource Model'
 ---
 
-## Setting up
+## Welcome
 
-Get your documentation site up and running in minutes.
+The Colorado Behavioral Health Resource Model (CoBHRM) Unified Data Model (UDM) defines the standardized format for submitting behavioral health data to the Colorado Behavioral Health Administration (BHA).
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+This documentation provides complete specifications for CSV-based data imports, including field definitions, validation rules, and example files.
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
+<CardGroup cols={2}>
   <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
+    title="Data Model Overview"
+    icon="sitemap"
+    href="/getting-started/data-model-overview"
   >
-    Edit your docs locally and preview them in real time.
+    Understand the schema hierarchy and relationships between record types
   </Card>
   <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
+    title="File Format Requirements"
+    icon="file-csv"
+    href="/getting-started/file-format-requirements"
   >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+    Learn about CSV parsing rules, encoding, and formatting standards
   </Card>
   <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
+    title="Transaction Types"
+    icon="arrows-rotate"
+    href="/getting-started/transaction-types"
   >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
-
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+    Understand Add, Update, and Replace operations
   </Card>
   <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
+    title="Validation Rules"
+    icon="shield-check"
+    href="/getting-started/validation-rules"
   >
-    Add sample code to demonstrate how to use your product.
+    Common validation errors and how to resolve them
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+</CardGroup>
 
-## Need inspiration?
+## Schema Quick Reference
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+The UDM consists of 9 schemas organized into three categories:
+
+### Core Schemas
+
+| Schema | Record Type | Description |
+|--------|-------------|-------------|
+| [CLIENT](/schemas/client) | `CLI` | Client demographics and identifiers |
+| [ADMISSION](/schemas/admission) | `ADM` | Treatment episode admission records |
+| [DISCHARGE](/schemas/discharge) | `DIS` | Treatment episode discharge records |
+
+### Clinical Data
+
+| Schema | Record Types | Description |
+|--------|--------------|-------------|
+| [DIAGNOSIS](/schemas/diagnosis) | `DXA`, `DXD` | Diagnosis at admission and discharge |
+| [SUBSTANCE USE DISORDER](/schemas/substance-use-disorder) | `SIA`, `SID` | Substance use information |
+
+### Specialized Programs
+
+| Schema | Record Types | Description |
+|--------|--------------|-------------|
+| [ACT](/schemas/act) | `ACT` | Assertive Community Treatment |
+| [ASCENT](/schemas/ascent) | `ASA`, `ASQ`, `ASD` | Youth residential treatment |
+| [SC BABY](/schemas/sc-baby) | `BAB` | Special Connections - Baby outcomes |
+| [SC PREGNANCY RISK](/schemas/sc-pregnancy-risk) | `PRS` | Special Connections - Pregnancy risk assessment |
+
+## Getting Started
+
+<Steps>
+  <Step title="Review File Format Requirements">
+    Understand the [CSV parsing rules](/getting-started/file-format-requirements) including encoding, delimiters, and date formats.
+  </Step>
+  <Step title="Understand Transaction Types">
+    Learn how [Add, Update, and Replace](/getting-started/transaction-types) transactions work.
+  </Step>
+  <Step title="Download Templates">
+    Get [starter templates](/reference/templates/downloads) for each schema with headers and sample rows.
+  </Step>
+  <Step title="Prepare Your Data">
+    Map your data to the required fields using the schema documentation pages.
+  </Step>
+  <Step title="Validate Before Submission">
+    Review the [validation rules](/getting-started/validation-rules) to catch errors before submitting.
+  </Step>
+</Steps>
+
+## Support
+
+Need help? Contact the BHA Data Team at [support@cobhrm.colorado.gov](mailto:support@cobhrm.colorado.gov).

@@ -1,0 +1,250 @@
+---
+title: 'SUBSTANCE USE DISORDER Schema (SIA/SID)'
+description: 'Substance use information at admission and discharge'
+icon: 'flask-vial'
+---
+
+<Info>
+**Record Types:** `SIA` (Admission), `SID` (Discharge) | **Version:** 2025 UDM | **Parent:** ADMISSION (SIA) or DISCHARGE (SID)
+</Info>
+
+## Overview
+
+The SUBSTANCE USE DISORDER schema captures detailed information about substances used by clients. There are two record types:
+- **SIA** - Substance Use at Admission: Substance use patterns at intake
+- **SID** - Substance Use at Discharge: Substance use status at end of treatment
+
+Multiple substances can be recorded per admission/discharge, with one designated as primary.
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `SIA` or `SID` | Must match context | `SIA` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | See [Transaction Types](/getting-started/transaction-types) | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Must match admission | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | Must exist in ADMISSION | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | Cannot be future | `2024-01-15` |
+| `SUBSTANCE_CODE` | Substance Code | `x(3)` | See codes below | Valid substance | `001` |
+| `PRIMARY_SUBSTANCE` | Primary Flag | `x(1)` | `0` or `1` | One per admission/discharge | `1` |
+| `FREQUENCY_USE` | Frequency of Use | `x(2)` | See codes below | Usage pattern | `03` |
+| `ROUTE_ADMIN` | Route of Administration | `x(2)` | See codes below | How substance used | `01` |
+| `AGE_FIRST_USE` | Age at First Use | `9(2)` | 1-99 | Years old | `16` |
+
+### Substance Codes
+
+| Code | Description |
+|------|-------------|
+| `001` | None |
+| `002` | Alcohol |
+| `003` | Cocaine/Crack |
+| `004` | Marijuana/Hashish |
+| `005` | Heroin |
+| `006` | Non-prescription Methadone |
+| `007` | Other Opiates/Synthetics |
+| `008` | PCP |
+| `009` | Hallucinogens |
+| `010` | Methamphetamine/Speed |
+| `011` | Other Amphetamines |
+| `012` | Other Stimulants |
+| `013` | Benzodiazepines |
+| `014` | Other Tranquilizers |
+| `015` | Barbiturates |
+| `016` | Other Sedatives/Hypnotics |
+| `017` | Inhalants |
+| `018` | Over-the-Counter Medications |
+| `019` | Fentanyl |
+| `020` | Other |
+
+### Frequency of Use Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | No use in past month |
+| `02` | 1-3 times in past month |
+| `03` | 1-2 times per week |
+| `04` | 3-6 times per week |
+| `05` | Daily |
+
+### Route of Administration Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Oral |
+| `02` | Smoking |
+| `03` | Inhalation |
+| `04` | Injection (IV) |
+| `05` | Injection (Intramuscular) |
+| `06` | Injection (Subcutaneous) |
+| `07` | Other |
+
+### Conditional Fields
+
+| BHA Column Name | Field Name | Format | Condition | Constraints | Example |
+|-----------------|------------|--------|-----------|-------------|---------|
+| `DAYS_USED_30` | Days Used (Last 30) | `9(2)` | Required for SIA | 0-30 | `15` |
+| `DAYS_ABSTINENT_30` | Days Abstinent (Last 30) | `9(2)` | Required for SID | 0-30 | `28` |
+
+### Optional Fields
+
+| BHA Column Name | Field Name | Format | Default | Constraints | Example |
+|-----------------|------------|--------|---------|-------------|---------|
+| `SUBSTANCE_NAME` | Substance Name | `x(100)` | NULL | Specific name | `Oxycodone` |
+| `DETAILED_USE_PATTERN` | Use Pattern | `x(200)` | NULL | Description | `Weekend use only` |
+| `PRIOR_TREATMENT_SUBSTANCE` | Prior SUD Treatment | `x(1)` | `0` | `0` or `1` | `1` |
+| `IV_DRUG_USE` | IV Drug Use (Ever) | `x(1)` | `0` | `0` or `1` | `0` |
+| `SHARED_NEEDLES` | Shared Needles (Ever) | `x(1)` | NULL | `0` or `1` | `0` |
+| `MAT_CURRENT` | Currently on MAT | `x(1)` | `0` | `0` or `1` | `1` |
+| `MAT_MEDICATION` | MAT Medication | `x(3)` | NULL | Code value | `001` |
+| `WITHDRAWAL_SYMPTOMS` | Withdrawal Symptoms | `x(1)` | NULL | `0` or `1` | `1` |
+| `NOTES` | Clinical Notes | `x(500)` | NULL | Free text | `History of overdose` |
+
+<Snippet file="metadata-fields.mdx" />
+
+---
+
+## 2. Examples
+
+### Minimal Valid Example (SIA - Admission)
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,SUBSTANCE_CODE,PRIMARY_SUBSTANCE,FREQUENCY_USE,ROUTE_ADMIN,AGE_FIRST_USE,DAYS_USED_30
+SIA,A,CLT-000001,CSE-000001,2024-01-15,002,1,04,01,16,20
+```
+
+### Minimal Valid Example (SID - Discharge)
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,SUBSTANCE_CODE,PRIMARY_SUBSTANCE,FREQUENCY_USE,ROUTE_ADMIN,AGE_FIRST_USE,DAYS_ABSTINENT_30
+SID,A,CLT-000001,CSE-000001,2024-06-15,002,1,01,01,16,30
+```
+
+### Complete Example - Multiple Substances
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,SUBSTANCE_CODE,PRIMARY_SUBSTANCE,FREQUENCY_USE,ROUTE_ADMIN,AGE_FIRST_USE,DAYS_USED_30,DAYS_ABSTINENT_30,SUBSTANCE_NAME,DETAILED_USE_PATTERN,PRIOR_TREATMENT_SUBSTANCE,IV_DRUG_USE,SHARED_NEEDLES,MAT_CURRENT,MAT_MEDICATION,WITHDRAWAL_SYMPTOMS,NOTES
+SIA,A,CLT-000001,CSE-000001,2024-01-15,005,1,05,04,22,28,,Heroin,Daily IV use,1,1,0,0,,1,Multiple prior treatment episodes. Last overdose 2023-11.
+SIA,A,CLT-000001,CSE-000001,2024-01-15,019,0,04,04,24,18,,Fentanyl,Mixed with heroin,1,1,0,0,,1,Often present in heroin supply
+SIA,A,CLT-000001,CSE-000001,2024-01-15,013,0,03,01,20,15,,Xanax,Self-medicating for anxiety,0,0,,0,,0,
+SID,A,CLT-000001,CSE-000001,2024-06-15,005,1,01,04,22,,30,Heroin,,1,1,0,1,001,0,Client on Suboxone MAT. Significant improvement.
+SID,A,CLT-000001,CSE-000001,2024-06-15,019,0,01,04,24,,30,Fentanyl,,1,1,0,1,001,0,
+SID,A,CLT-000001,CSE-000001,2024-06-15,013,0,01,01,20,,30,Xanax,,0,0,,0,,0,Discontinued with medical supervision
+```
+
+### Edge Cases
+
+```csv
+# Alcohol only (common for MH-primary admissions)
+SIA,A,CLT-000002,CSE-000002,2024-01-20,002,1,03,01,18,8,,,Social drinking escalated during pandemic,0,0,,0,,,Referred by PCP for depression
+
+# Poly-substance with MAT
+SIA,A,CLT-000003,CSE-000003,2024-01-25,010,1,05,02,19,25,,,Methamphetamine primary,0,0,,0,,0,
+SIA,A,CLT-000003,CSE-000003,2024-01-25,007,0,04,04,21,20,,Oxycodone,Prescription started after injury,1,1,1,1,002,1,Currently on methadone for OUD
+
+# No substance use (MH-only admission)
+SIA,A,CLT-000004,CSE-000004,2024-02-01,001,1,01,07,0,0,,,No substance use,0,0,,0,,0,Mental health primary admission
+```
+
+### Invalid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,SUBSTANCE_CODE,PRIMARY_SUBSTANCE,FREQUENCY_USE,ROUTE_ADMIN,AGE_FIRST_USE,DAYS_USED_30
+SIA,A,CLT-000001,CSE-999999,2024-01-15,002,1,04,01,16,20
+SIA,A,CLT-000001,CSE-000001,2024-01-15,999,1,04,01,16,20
+SIA,A,CLT-000001,CSE-000001,2024-01-15,002,1,04,01,16,
+SIA,A,CLT-000001,CSE-000001,2024-01-15,002,1,04,01,16,45
+```
+
+**Errors:**
+- Row 1: `REF-002` - Admission not found: CSE-999999
+- Row 2: `SIA-003` - Invalid SUBSTANCE_CODE: 999
+- Row 3: `XFD-001` - DAYS_USED_30 required for SIA record type
+- Row 4: `SIA-004` - DAYS_USED_30 must be 0-30
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `SIA-001` | SUBSTANCE_CODE is required | Provide valid substance code |
+| `SIA-002` | FREQUENCY_USE is required | Provide usage frequency |
+| `SIA-003` | Invalid SUBSTANCE_CODE | Use code from valid list |
+| `SIA-004` | DAYS_USED_30 must be 0-30 | Check value range |
+| `SIA-005` | Multiple primary substances | Only one can be PRIMARY_SUBSTANCE=1 |
+| `SIA-006` | No primary substance | At least one must be PRIMARY_SUBSTANCE=1 |
+| `SID-001` | DAYS_ABSTINENT_30 required for SID | Provide days abstinent |
+| `SID-002` | DAYS_ABSTINENT_30 must be 0-30 | Check value range |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| Primary Substance | All substances for case | Exactly one must have `PRIMARY_SUBSTANCE` = `1` |
+| Days Used (SIA) | `RECORD_TYPE`, `DAYS_USED_30` | `DAYS_USED_30` required when `RECORD_TYPE` = `SIA` |
+| Days Abstinent (SID) | `RECORD_TYPE`, `DAYS_ABSTINENT_30` | `DAYS_ABSTINENT_30` required when `RECORD_TYPE` = `SID` |
+| IV Drug Use | `IV_DRUG_USE`, `SHARED_NEEDLES` | If `IV_DRUG_USE` = `1`, `SHARED_NEEDLES` should be answered |
+| MAT | `MAT_CURRENT`, `MAT_MEDICATION` | If `MAT_CURRENT` = `1`, `MAT_MEDICATION` recommended |
+
+---
+
+## 4. Template
+
+<Card title="Download SUBSTANCE USE Template" icon="download" href="/templates/substance_use_template.csv">
+  SUBSTANCE USE DISORDER schema template with headers and sample row (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Escape | Doubled quotes (`""`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+
+---
+
+## 6. Update Semantics
+
+### Primary Key
+
+`BHASO_CASE_IDENTIFIER` + `SUBSTANCE_CODE` + `RECORD_TYPE` + `EFFECTIVE_DATE`
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates new substance record |
+| Update | `U` | Updates existing substance (same code, new effective date) |
+| Replace | `R` | Overwrites most recent substance record |
+
+### Multiple Substances
+
+- Multiple substances per admission/discharge are allowed
+- Each substance identified by unique `SUBSTANCE_CODE`
+- One substance must be marked as `PRIMARY_SUBSTANCE` = `1`
+- Use code `001` (None) for clients without substance use issues
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [ADMISSION](/schemas/admission) | Parent (SIA) | `BHASO_CASE_IDENTIFIER` |
+| [DISCHARGE](/schemas/discharge) | Parent (SID) | `BHASO_CASE_IDENTIFIER` |
+| [CLIENT](/schemas/client) | Grandparent | `BHASO_CLIENT_IDENTIFIER` |
+| [DIAGNOSIS](/schemas/diagnosis) | Sibling | `BHASO_CASE_IDENTIFIER` |

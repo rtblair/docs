@@ -1,0 +1,103 @@
+---
+title: 'Appendix A - Code Tables Overview'
+description: 'Index of all valid code values used in the CoBHRM data model'
+icon: 'list'
+---
+
+## Overview
+
+Appendix A contains all valid code values used throughout the CoBHRM Unified Data Model. When submitting data, you must use the exact codes specified in these tables.
+
+<Warning>
+Using invalid codes will result in validation errors. Always refer to the current version of Appendix A for valid values.
+</Warning>
+
+## Code Table Index
+
+<CardGroup cols={2}>
+  <Card title="Counties" icon="location-dot" href="/reference/appendix-a/counties">
+    Colorado county FIPS codes for residence and service locations
+  </Card>
+  <Card title="Race & Ethnicity" icon="users" href="/reference/appendix-a/race-ethnicity">
+    Race and ethnicity classification codes
+  </Card>
+  <Card title="Gender Codes" icon="person" href="/reference/appendix-a/gender-codes">
+    Sex at birth, gender identity, and sexual orientation codes
+  </Card>
+  <Card title="Service Identifiers" icon="clipboard-list" href="/reference/appendix-a/service-identifiers">
+    Service type and treatment modality codes
+  </Card>
+  <Card title="Referral Sources" icon="share" href="/reference/appendix-a/referral-sources">
+    Referral source classification codes
+  </Card>
+  <Card title="Legal Status" icon="gavel" href="/reference/appendix-a/legal-status">
+    Legal and criminal justice status codes
+  </Card>
+  <Card title="Living Situation" icon="house" href="/reference/appendix-a/living-situation">
+    Housing and living arrangement codes
+  </Card>
+  <Card title="Employment Status" icon="briefcase" href="/reference/appendix-a/employment-status">
+    Employment and occupation codes
+  </Card>
+</CardGroup>
+
+## Code Table Format
+
+Each code table includes:
+
+| Column | Description |
+|--------|-------------|
+| **Code** | The exact value to use in your data file |
+| **Description** | Human-readable meaning of the code |
+| **Effective Date** | When this code became valid (if applicable) |
+| **Retired Date** | When this code was retired (if applicable) |
+| **Notes** | Additional context or usage guidance |
+
+## Using Code Tables
+
+### Single-Value Fields
+
+For fields that accept a single code value, use the code exactly as shown:
+
+```csv
+SEX,COUNTY_CODE,REFERRAL_SOURCE
+F,031,01
+```
+
+### Multi-Value Fields
+
+Some fields accept multiple values separated by semicolon and space (`; `):
+
+```csv
+RACE,DISABILITY_CODES
+05; 06; 07,01; 03
+```
+
+<Tip>
+The delimiter for multi-value fields is semicolon followed by a single space: `; `
+</Tip>
+
+## Version History
+
+| Version | Effective Date | Changes |
+|---------|---------------|---------|
+| 2025 | 2025-01-01 | Current version |
+| 2024 | 2024-01-01 | Previous version |
+
+<Note>
+Code values may be added or retired over time. Always check the effective dates when working with historical data.
+</Note>
+
+## Requesting New Codes
+
+If you need a code value that doesn't exist in Appendix A:
+
+1. Contact the BHA Data Team
+2. Provide justification for the new code
+3. Temporary workaround: Use code `99` (Other) with explanation in notes field
+
+## Download Full Code Tables
+
+<Card title="Download Appendix A (Excel)" icon="file-excel" href="/templates/appendix_a_code_tables.xlsx">
+  Complete code tables in Excel format with all values and effective dates
+</Card>

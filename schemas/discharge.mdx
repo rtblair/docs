@@ -1,0 +1,209 @@
+---
+title: 'DISCHARGE Schema (DIS)'
+description: 'Treatment episode discharge records'
+icon: 'door-closed'
+---
+
+<Info>
+**Record Type:** `DIS` | **Version:** 2025 UDM | **Parent:** ADMISSION | **Children:** DIAGNOSIS (DXD), SUBSTANCE USE (SID)
+</Info>
+
+## Overview
+
+The DISCHARGE schema captures information about the end of a treatment episode. A discharge record closes an open admission and allows for outcome tracking. Each admission can have at most one discharge record.
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `DIS` | Must be exact | `DIS` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | See [Transaction Types](/getting-started/transaction-types) | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Must match admission | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | Must exist in ADMISSION | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | Cannot be future | `2024-06-15` |
+| `DISCHARGE_DATE` | Discharge Date | `date` | YYYY-MM-DD | Must be ≥ ADMISSION_DATE | `2024-06-15` |
+| `DISCHARGE_REASON` | Discharge Reason | `x(2)` | Code value | See code table below | `01` |
+| `DISCHARGE_STATUS` | Discharge Status | `x(2)` | Code value | Treatment outcome | `01` |
+| `LIVING_SITUATION` | Living Situation at Discharge | `x(2)` | See [Living Situation](/reference/appendix-a/living-situation) | Code value | `01` |
+| `EMPLOYMENT_STATUS` | Employment Status at Discharge | `x(2)` | See [Employment Status](/reference/appendix-a/employment-status) | Code value | `02` |
+
+### Discharge Reason Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Treatment completed |
+| `02` | Dropped out of treatment |
+| `03` | Terminated by facility |
+| `04` | Transferred to another facility |
+| `05` | Incarcerated |
+| `06` | Death |
+| `07` | Other |
+| `08` | Administrative discharge |
+| `09` | Left against medical advice |
+
+### Discharge Status Codes
+
+| Code | Description |
+|------|-------------|
+| `01` | Completed treatment - goals met |
+| `02` | Completed treatment - goals partially met |
+| `03` | Did not complete treatment |
+| `04` | Referred to another level of care |
+| `05` | Unknown |
+
+### Conditional Fields
+
+| BHA Column Name | Field Name | Format | Condition | Constraints | Example |
+|-----------------|------------|--------|-----------|-------------|---------|
+| `TRANSFER_FACILITY` | Transfer Facility | `x(100)` | Required if `DISCHARGE_REASON` = `04` | Facility name | `Mountain View BH Center` |
+| `DEATH_DATE` | Date of Death | `date` | Required if `DISCHARGE_REASON` = `06` | YYYY-MM-DD | `2024-06-15` |
+| `INCARCERATION_FACILITY` | Incarceration Facility | `x(100)` | Required if `DISCHARGE_REASON` = `05` | Facility name | `Denver County Jail` |
+
+### Optional Fields
+
+| BHA Column Name | Field Name | Format | Default | Constraints | Example |
+|-----------------|------------|--------|---------|-------------|---------|
+| `ARREST_30_DAYS` | Arrests in Last 30 Days | `9(2)` | `0` | 0-99 | `0` |
+| `SELF_HELP_ATTENDANCE` | Self-Help Meetings (30 days) | `9(2)` | NULL | 0-99 | `8` |
+| `DAYS_IN_TREATMENT` | Total Days in Treatment | `9(4)` | NULL | Calculated if empty | `152` |
+| `NUM_SESSIONS` | Number of Sessions | `9(4)` | NULL | 0-9999 | `24` |
+| `PREGNANT_AT_DISCHARGE` | Pregnant at Discharge | `x(1)` | NULL | `0`, `1`, `9` | `0` |
+| `FOLLOWUP_PLANNED` | Follow-up Planned | `x(1)` | `0` | `0` or `1` | `1` |
+| `FOLLOWUP_DATE` | Planned Follow-up Date | `date` | NULL | YYYY-MM-DD | `2024-07-15` |
+| `AFTERCARE_REFERRAL` | Aftercare Referral Made | `x(1)` | `0` | `0` or `1` | `1` |
+| `AFTERCARE_TYPE` | Aftercare Type | `x(2)` | NULL | Code value | `01` |
+| `CLIENT_SATISFACTION` | Client Satisfaction Score | `9(1)` | NULL | 1-5 scale | `4` |
+| `TREATMENT_GAINS` | Treatment Gains Noted | `x(1)` | NULL | `0` or `1` | `1` |
+| `NOTES` | Discharge Notes | `x(500)` | NULL | Free text | `Client completed all goals` |
+
+<Snippet file="metadata-fields.mdx" />
+
+---
+
+## 2. Examples
+
+### Minimal Valid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,DISCHARGE_DATE,DISCHARGE_REASON,DISCHARGE_STATUS,LIVING_SITUATION,EMPLOYMENT_STATUS
+DIS,A,CLT-000001,CSE-000001,2024-06-15,2024-06-15,01,01,01,02
+```
+
+### Complete Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,DISCHARGE_DATE,DISCHARGE_REASON,DISCHARGE_STATUS,LIVING_SITUATION,EMPLOYMENT_STATUS,TRANSFER_FACILITY,DEATH_DATE,INCARCERATION_FACILITY,ARREST_30_DAYS,SELF_HELP_ATTENDANCE,DAYS_IN_TREATMENT,NUM_SESSIONS,PREGNANT_AT_DISCHARGE,FOLLOWUP_PLANNED,FOLLOWUP_DATE,AFTERCARE_REFERRAL,AFTERCARE_TYPE,CLIENT_SATISFACTION,TREATMENT_GAINS,NOTES
+DIS,A,CLT-000001,CSE-000001,2024-06-15,2024-06-15,01,01,01,02,,,,0,8,152,24,0,1,2024-07-15,1,01,5,1,Client successfully completed all treatment goals. Significant improvement in coping skills and family relationships.
+DIS,A,CLT-000002,CSE-000002,2024-06-20,2024-06-20,04,04,02,06,Mountain View BH Center,,,0,0,60,12,,1,2024-07-01,1,02,4,1,Transferred to higher level of care for intensive treatment
+DIS,A,CLT-000003,CSE-000003,2024-06-25,2024-06-25,02,03,05,06,,,,1,0,45,8,,0,,,0,,,Client stopped attending sessions after 45 days
+```
+
+### Edge Cases
+
+```csv
+# Death during treatment
+DIS,A,CLT-000004,CSE-000004,2024-05-10,2024-05-10,06,05,99,99,,,2024-05-10,0,,120,15,,0,,,0,,,Client passed away due to unrelated medical condition
+
+# Transfer to incarceration
+DIS,A,CLT-000005,CSE-000005,2024-07-01,2024-07-01,05,03,06,06,,,Denver County Jail,2,0,90,10,,0,,,0,,,Treatment interrupted due to incarceration
+```
+
+### Invalid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,DISCHARGE_DATE,DISCHARGE_REASON,DISCHARGE_STATUS,LIVING_SITUATION,EMPLOYMENT_STATUS,TRANSFER_FACILITY
+DIS,A,CLT-000001,CSE-999999,2024-06-15,2024-06-15,01,01,01,02,
+DIS,A,CLT-000001,CSE-000001,2024-06-15,2024-01-01,01,01,01,02,
+DIS,A,CLT-000001,CSE-000002,2024-06-15,2024-06-15,04,04,01,02,
+```
+
+**Errors:**
+- Row 1: `REF-002` - Admission not found: CSE-999999 (must submit ADMISSION record first)
+- Row 2: `DIS-005` - DISCHARGE_DATE (2024-01-01) cannot be before ADMISSION_DATE (2024-01-15)
+- Row 3: `XFD-001` - TRANSFER_FACILITY required when DISCHARGE_REASON = 04
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `DIS-001` | BHASO_CASE_IDENTIFIER is required | Provide case identifier |
+| `DIS-002` | DISCHARGE_DATE is required | Provide discharge date |
+| `DIS-003` | DISCHARGE_REASON is required | Provide valid discharge reason code |
+| `DIS-004` | Admission not found | Submit ADMISSION record first |
+| `DIS-005` | DISCHARGE_DATE cannot be before ADMISSION_DATE | Check date values |
+| `DIS-006` | Discharge already exists for this admission | Use Update (U) to modify |
+| `DIS-007` | DISCHARGE_DATE cannot be in future | Use date on or before today |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| Transfer | `DISCHARGE_REASON`, `TRANSFER_FACILITY` | If `DISCHARGE_REASON` = `04`, `TRANSFER_FACILITY` required |
+| Death | `DISCHARGE_REASON`, `DEATH_DATE` | If `DISCHARGE_REASON` = `06`, `DEATH_DATE` required |
+| Incarceration | `DISCHARGE_REASON`, `INCARCERATION_FACILITY` | If `DISCHARGE_REASON` = `05`, `INCARCERATION_FACILITY` required |
+| Follow-up | `FOLLOWUP_PLANNED`, `FOLLOWUP_DATE` | If `FOLLOWUP_PLANNED` = `1`, `FOLLOWUP_DATE` recommended |
+| Date Sequence | `DISCHARGE_DATE`, `FOLLOWUP_DATE` | `FOLLOWUP_DATE` must be after `DISCHARGE_DATE` |
+
+---
+
+## 4. Template
+
+<Card title="Download DISCHARGE Template" icon="download" href="/templates/discharge_template.csv">
+  DISCHARGE schema template with headers and sample row (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Escape | Doubled quotes (`""`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+
+---
+
+## 6. Update Semantics
+
+### Primary Key
+
+`BHASO_CASE_IDENTIFIER` (one discharge per admission)
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates discharge record; fails if discharge exists for case |
+| Update | `U` | Updates existing discharge record |
+| Replace | `R` | Overwrites discharge record |
+
+### Idempotency
+
+- Only one discharge record per `BHASO_CASE_IDENTIFIER`
+- Once discharged, case cannot receive new clinical records
+- Re-admission requires new `BHASO_CASE_IDENTIFIER`
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [CLIENT](/schemas/client) | Grandparent | `BHASO_CLIENT_IDENTIFIER` |
+| [ADMISSION](/schemas/admission) | Parent | `BHASO_CASE_IDENTIFIER` |
+| [DIAGNOSIS (DXD)](/schemas/diagnosis) | Child | `BHASO_CASE_IDENTIFIER` |
+| [SUBSTANCE USE (SID)](/schemas/substance-use-disorder) | Child | `BHASO_CASE_IDENTIFIER` |

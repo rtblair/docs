@@ -1,0 +1,203 @@
+---
+title: 'DIAGNOSIS Schema (DXA/DXD)'
+description: 'Clinical diagnoses at admission and discharge'
+icon: 'stethoscope'
+---
+
+<Info>
+**Record Types:** `DXA` (Admission), `DXD` (Discharge) | **Version:** 2025 UDM | **Parent:** ADMISSION (DXA) or DISCHARGE (DXD)
+</Info>
+
+## Overview
+
+The DIAGNOSIS schema captures clinical diagnoses using ICD-10-CM codes. There are two record types:
+- **DXA** - Diagnosis at Admission: Diagnoses assigned at the start of treatment
+- **DXD** - Diagnosis at Discharge: Diagnoses confirmed or updated at end of treatment
+
+Multiple diagnoses can be recorded per admission/discharge, with one designated as primary.
+
+<Snippet file="snippet-intro.mdx" />
+
+---
+
+## 1. Schema Reference
+
+### Required Fields
+
+| BHA Column Name | Field Name | Format | Valid Values | Constraints | Example |
+|-----------------|------------|--------|--------------|-------------|---------|
+| `RECORD_TYPE` | Record Type | `x(3)` | `DXA` or `DXD` | Must match context | `DXA` |
+| `TRANSACTION_TYPE` | Transaction Type | `x(1)` | `A`, `U`, `R` | See [Transaction Types](/getting-started/transaction-types) | `A` |
+| `BHASO_CLIENT_IDENTIFIER` | Client Identifier | `x(20)` | Alphanumeric | Must match admission | `CLT-000001` |
+| `BHASO_CASE_IDENTIFIER` | Case Identifier | `x(20)` | Alphanumeric | Must exist in ADMISSION | `CSE-000001` |
+| `EFFECTIVE_DATE` | Effective Date | `date` | YYYY-MM-DD | Cannot be future | `2024-01-15` |
+| `DIAGNOSIS_CODE` | ICD-10-CM Code | `x(10)` | Valid ICD-10-CM | With or without decimal | `F32.1` |
+| `DIAGNOSIS_TYPE` | Diagnosis Type | `x(1)` | `M`, `S`, `O` | See codes below | `M` |
+| `PRIMARY_DIAGNOSIS` | Primary Flag | `x(1)` | `0` or `1` | One per admission/discharge | `1` |
+
+### Diagnosis Type Codes
+
+| Code | Description |
+|------|-------------|
+| `M` | Mental Health diagnosis |
+| `S` | Substance Use Disorder diagnosis |
+| `O` | Other medical diagnosis |
+
+### Conditional Fields
+
+| BHA Column Name | Field Name | Format | Condition | Constraints | Example |
+|-----------------|------------|--------|-----------|-------------|---------|
+| `DIAGNOSIS_DATE` | Diagnosis Date | `date` | Required for DXD | Date diagnosis confirmed | `2024-06-15` |
+| `PROVISIONAL` | Provisional Flag | `x(1)` | Required for DXA | `0` or `1` | `1` |
+
+### Optional Fields
+
+| BHA Column Name | Field Name | Format | Default | Constraints | Example |
+|-----------------|------------|--------|---------|-------------|---------|
+| `DIAGNOSIS_DESCRIPTION` | Description | `x(200)` | NULL | Free text or ICD description | `Major depressive disorder, single episode, moderate` |
+| `ONSET_DATE` | Onset Date | `date` | NULL | Date condition began | `2023-06-01` |
+| `DIAGNOSIS_SOURCE` | Source | `x(2)` | NULL | Code value | `01` |
+| `DIAGNOSING_PROVIDER` | Provider | `x(100)` | NULL | Provider name/ID | `Dr. Smith` |
+| `SEVERITY` | Severity | `x(1)` | NULL | `1`-`5` scale | `3` |
+| `NOTES` | Clinical Notes | `x(500)` | NULL | Free text | `Recurrent episodes` |
+
+<Snippet file="metadata-fields.mdx" />
+
+---
+
+## 2. Examples
+
+### Minimal Valid Example (DXA - Admission)
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,DIAGNOSIS_CODE,DIAGNOSIS_TYPE,PRIMARY_DIAGNOSIS,PROVISIONAL
+DXA,A,CLT-000001,CSE-000001,2024-01-15,F32.1,M,1,0
+```
+
+### Minimal Valid Example (DXD - Discharge)
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,DIAGNOSIS_CODE,DIAGNOSIS_TYPE,PRIMARY_DIAGNOSIS,DIAGNOSIS_DATE
+DXD,A,CLT-000001,CSE-000001,2024-06-15,F32.1,M,1,2024-06-15
+```
+
+### Complete Example - Multiple Diagnoses
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,DIAGNOSIS_CODE,DIAGNOSIS_TYPE,PRIMARY_DIAGNOSIS,PROVISIONAL,DIAGNOSIS_DATE,DIAGNOSIS_DESCRIPTION,ONSET_DATE,DIAGNOSIS_SOURCE,DIAGNOSING_PROVIDER,SEVERITY,NOTES
+DXA,A,CLT-000001,CSE-000001,2024-01-15,F32.1,M,1,0,,Major depressive disorder single episode moderate,2023-06-01,01,Dr. Smith,3,Recurrent episodes since adolescence
+DXA,A,CLT-000001,CSE-000001,2024-01-15,F41.1,M,0,1,,Generalized anxiety disorder,2023-01-15,01,Dr. Smith,2,Provisional - needs further assessment
+DXA,A,CLT-000001,CSE-000001,2024-01-15,F10.20,S,0,0,,Alcohol use disorder moderate,2022-08-01,01,Dr. Smith,3,
+DXD,A,CLT-000001,CSE-000001,2024-06-15,F32.0,M,1,,2024-06-15,Major depressive disorder single episode mild,2023-06-01,01,Dr. Smith,2,Improved from moderate to mild severity
+DXD,A,CLT-000001,CSE-000001,2024-06-15,F41.1,M,0,,2024-06-15,Generalized anxiety disorder,2023-01-15,01,Dr. Smith,2,Diagnosis confirmed
+DXD,A,CLT-000001,CSE-000001,2024-06-15,F10.10,S,0,,2024-06-15,Alcohol use disorder mild,2022-08-01,01,Dr. Smith,2,Improved from moderate to mild
+```
+
+### Edge Cases
+
+```csv
+# ICD-10 code without decimal
+DXA,A,CLT-000002,CSE-000002,2024-01-20,F331,M,1,0,,Recurrent depressive disorder moderate,,,,,
+
+# Co-occurring mental health and substance use
+DXA,A,CLT-000003,CSE-000003,2024-01-25,F33.1,M,1,0,,Major depressive disorder recurrent moderate,2020-01-01,,Dr. Johnson,3,
+DXA,A,CLT-000003,CSE-000003,2024-01-25,F11.20,S,0,0,,Opioid use disorder moderate,2021-06-01,,Dr. Johnson,4,
+DXA,A,CLT-000003,CSE-000003,2024-01-25,E11.9,O,0,0,,Type 2 diabetes mellitus,2018-03-15,,Dr. Johnson,,Medical comorbidity
+```
+
+### Invalid Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,BHASO_CLIENT_IDENTIFIER,BHASO_CASE_IDENTIFIER,EFFECTIVE_DATE,DIAGNOSIS_CODE,DIAGNOSIS_TYPE,PRIMARY_DIAGNOSIS,PROVISIONAL,DIAGNOSIS_DATE
+DXA,A,CLT-000001,CSE-999999,2024-01-15,F32.1,M,1,0,
+DXA,A,CLT-000001,CSE-000001,2024-01-15,INVALID,M,1,0,
+DXA,A,CLT-000001,CSE-000001,2024-01-15,F32.1,M,1,,
+DXD,A,CLT-000001,CSE-000001,2024-06-15,F32.1,M,1,,
+```
+
+**Errors:**
+- Row 1: `REF-002` - Admission not found: CSE-999999
+- Row 2: `DXA-003` - Invalid ICD-10-CM code: INVALID
+- Row 3: `XFD-001` - PROVISIONAL required for DXA record type
+- Row 4: `XFD-001` - DIAGNOSIS_DATE required for DXD record type
+
+---
+
+## 3. Validation Rules
+
+### Error Codes
+
+| Code | Message | Resolution |
+|------|---------|------------|
+| `DXA-001` | DIAGNOSIS_CODE is required | Provide ICD-10-CM code |
+| `DXA-002` | DIAGNOSIS_TYPE is required | Provide M, S, or O |
+| `DXA-003` | Invalid ICD-10-CM code | Verify code against ICD-10-CM codebook |
+| `DXA-004` | Admission not found | Submit ADMISSION record first |
+| `DXA-005` | Multiple primary diagnoses | Only one diagnosis can be PRIMARY_DIAGNOSIS=1 |
+| `DXA-006` | No primary diagnosis | At least one diagnosis must be PRIMARY_DIAGNOSIS=1 |
+| `DXD-001` | Discharge not found | Submit DISCHARGE record first (for DXD) |
+| `DXD-002` | DIAGNOSIS_DATE required for DXD | Provide diagnosis confirmation date |
+
+### Cross-Field Validation
+
+| Rule | Fields | Constraint |
+|------|--------|------------|
+| Primary Diagnosis | All diagnoses for case | Exactly one must have `PRIMARY_DIAGNOSIS` = `1` |
+| Provisional (DXA) | `RECORD_TYPE`, `PROVISIONAL` | `PROVISIONAL` required when `RECORD_TYPE` = `DXA` |
+| Diagnosis Date (DXD) | `RECORD_TYPE`, `DIAGNOSIS_DATE` | `DIAGNOSIS_DATE` required when `RECORD_TYPE` = `DXD` |
+| ICD-10 Format | `DIAGNOSIS_CODE` | Must be valid ICD-10-CM (3-7 characters) |
+
+---
+
+## 4. Template
+
+<Card title="Download DIAGNOSIS Template" icon="download" href="/templates/diagnosis_template.csv">
+  DIAGNOSIS schema template with headers and sample row (v2025)
+</Card>
+
+---
+
+## 5. Parsing Rules
+
+| Property | Value |
+|----------|-------|
+| Encoding | UTF-8 |
+| Delimiter | Comma (`,`) |
+| Quote Character | Double quote (`"`) |
+| Escape | Doubled quotes (`""`) |
+| Date Format | `YYYY-MM-DD` |
+| Null Representation | Empty field (`,,`) |
+| ICD-10 Format | With or without decimal (`F32.1` or `F321`) |
+
+---
+
+## 6. Update Semantics
+
+### Primary Key
+
+`BHASO_CASE_IDENTIFIER` + `DIAGNOSIS_CODE` + `RECORD_TYPE` + `EFFECTIVE_DATE`
+
+### Transaction Types
+
+| Type | Code | Behavior |
+|------|------|----------|
+| Add | `A` | Creates new diagnosis record |
+| Update | `U` | Updates existing diagnosis (same code, new effective date) |
+| Replace | `R` | Overwrites most recent diagnosis record |
+
+### Multiple Diagnoses
+
+- Multiple diagnoses per admission/discharge are allowed
+- Each diagnosis identified by unique `DIAGNOSIS_CODE`
+- One diagnosis must be marked as `PRIMARY_DIAGNOSIS` = `1`
+- Duplicate diagnosis codes for same case/type are not allowed
+
+---
+
+## Related Schemas
+
+| Schema | Relationship | Key Field |
+|--------|--------------|-----------|
+| [ADMISSION](/schemas/admission) | Parent (DXA) | `BHASO_CASE_IDENTIFIER` |
+| [DISCHARGE](/schemas/discharge) | Parent (DXD) | `BHASO_CASE_IDENTIFIER` |
+| [CLIENT](/schemas/client) | Grandparent | `BHASO_CLIENT_IDENTIFIER` |

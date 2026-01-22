@@ -1,0 +1,161 @@
+---
+title: 'File Format Requirements'
+description: 'CSV parsing rules, encoding standards, and formatting specifications'
+icon: 'file-csv'
+---
+
+<Info>
+This page documents **Principle #5: Parsing Rules** - how the system will read and interpret your submitted files.
+</Info>
+
+## File Format Specification
+
+All data files must be submitted in CSV (Comma-Separated Values) format following these specifications:
+
+| Property | Value | Notes |
+|----------|-------|-------|
+| **File Extension** | `.csv` | Required |
+| **Encoding** | UTF-8 | Required; BOM optional |
+| **Line Endings** | CRLF or LF | Both accepted |
+| **Header Row** | Required | First row must contain column names |
+
+## Delimiter and Quoting
+
+| Property | Value | Notes |
+|----------|-------|-------|
+| **Field Delimiter** | Comma (`,`) | ASCII 44 |
+| **Quote Character** | Double quote (`"`) | Use when field contains delimiter, newline, or quote |
+| **Escape Character** | Doubled quote (`""`) | Two double-quotes to represent a literal quote |
+| **Multi-value Delimiter** | Semicolon + space (`; `) | Used for Race, Disabilities, and other multi-value fields |
+
+### Quoting Examples
+
+```csv
+# Field with comma - must be quoted
+"Smith, Jr.",John,1990-05-15
+
+# Field with quote - escape with doubled quote
+"O""Brien",Mary,1985-03-20
+
+# Field with newline - must be quoted
+"123 Main St
+Apt 4B",Denver,80202
+```
+
+## Data Types
+
+### Text Fields
+
+| Format Code | Description | Example |
+|-------------|-------------|---------|
+| `x(n)` | Fixed/variable text up to n characters | `x(50)` = up to 50 characters |
+| `x(n) R` | Required text field | Must not be empty |
+
+<Warning>
+Leading and trailing whitespace is **trimmed** from all text fields. Internal whitespace is preserved.
+</Warning>
+
+### Date and Time Formats
+
+| Format | Pattern | Example | Notes |
+|--------|---------|---------|-------|
+| Date | `YYYY-MM-DD` | `2024-01-15` | ISO 8601 format |
+| Timestamp | `YYYY-MM-DD HH:MM:SS` | `2024-01-15 14:30:00` | 24-hour format, Mountain Time |
+| Time | `HH:MM:SS` | `14:30:00` | 24-hour format |
+
+<Note>
+All timestamps are interpreted as Mountain Time (MT). Do not include timezone offsets.
+</Note>
+
+### Numeric Formats
+
+| Format | Description | Example |
+|--------|-------------|---------|
+| `9(n)` | Integer up to n digits | `9(5)` = 0-99999 |
+| `9(n).9(m)` | Decimal with n integer digits and m decimal places | `9(3).9(2)` = 0-999.99 |
+
+### Boolean Values
+
+Boolean fields accept:
+
+| True Values | False Values |
+|-------------|--------------|
+| `1`, `Y`, `YES`, `TRUE` | `0`, `N`, `NO`, `FALSE` |
+
+<Info>
+Boolean comparisons are case-insensitive. `yes`, `Yes`, and `YES` are all valid.
+</Info>
+
+## Null and Empty Values
+
+| Representation | Interpretation |
+|----------------|----------------|
+| Empty field (`,,`) | NULL / not provided |
+| Whitespace only (` `) | NULL (trimmed to empty) |
+| `NULL` (literal text) | Treated as the string "NULL", not as null |
+
+### Example
+
+```csv
+RECORD_TYPE,TRANSACTION_TYPE,CLIENT_ID,MIDDLE_NAME,SUFFIX
+CLI,A,CLT-001,,Jr.
+CLI,A,CLT-002,James,
+```
+
+In this example:
+- Row 1: `MIDDLE_NAME` is null, `SUFFIX` is "Jr."
+- Row 2: `MIDDLE_NAME` is "James", `SUFFIX` is null
+
+## Column Order
+
+<Warning>
+**Important:** Column order must match the header row exactly. The system uses headers to identify fields, not position. However, all headers must be present and correctly spelled.
+</Warning>
+
+### Required Headers
+
+Each schema specifies required headers. Missing required headers will cause the entire file to be rejected.
+
+## File Size Limits
+
+| Limit | Value |
+|-------|-------|
+| Maximum file size | 100 MB |
+| Maximum rows per file | 1,000,000 |
+| Maximum columns | 200 |
+
+<Tip>
+For large data sets, split files by record type and submit separately. Each file should contain only one record type.
+</Tip>
+
+## Validation Sequence
+
+Files are processed in this order:
+
+<Steps>
+  <Step title="File Format Validation">
+    Verify CSV structure, encoding, and header presence
+  </Step>
+  <Step title="Header Validation">
+    Check that all required headers are present and correctly named
+  </Step>
+  <Step title="Row-Level Validation">
+    Validate each row against schema rules (data types, required fields, code values)
+  </Step>
+  <Step title="Cross-Field Validation">
+    Check conditional requirements and field relationships
+  </Step>
+  <Step title="Referential Validation">
+    Verify foreign key relationships to parent records
+  </Step>
+</Steps>
+
+## Common Format Errors
+
+| Error | Cause | Resolution |
+|-------|-------|------------|
+| Invalid encoding | File not saved as UTF-8 | Re-save file with UTF-8 encoding |
+| Missing header | Required column not in header row | Add missing column header |
+| Unescaped quote | Quote character inside unquoted field | Quote the entire field and escape internal quotes |
+| Invalid date | Date not in YYYY-MM-DD format | Reformat dates to ISO 8601 |
+| Trailing delimiter | Extra comma at end of row | Remove trailing comma |
