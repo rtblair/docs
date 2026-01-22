@@ -112,5 +112,6 @@
   "background": {
     "decoration": "grid"
   },
-  "description": "A quasi-official website from the Colorado Behavioral Health Administration"
+  "description": "A quasi-official website from the Colorado Behavioral Health Administration",
+  "logo": "/images/logo.svg"
 }
