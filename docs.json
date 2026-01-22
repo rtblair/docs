@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "aspen",
-  "name": "CoBHRM Unified Data Model",
+  "name": "BHA Data Docs",
   "colors": {
     "primary": "#003366",
     "light": "#0066CC",
@@ -96,10 +96,6 @@
       }
     ]
   },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
   "navbar": {
     "links": [
       {
@@ -112,5 +108,9 @@
     "socials": {
       "github": "https://github.com/colorado-behavioral-health"
     }
-  }
+  },
+  "background": {
+    "decoration": "grid"
+  },
+  "description": "A quasi-official website from the Colorado Behavioral Health Administration"
 }
